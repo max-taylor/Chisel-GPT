@@ -23,7 +23,10 @@ use foundry_config::{
 use rustyline::{config::Configurer, error::ReadlineError, Editor};
 use yansi::Paint;
 
-use crate::{completion::complete::CompletionClient, helpers::dispatch::dispatch_print};
+use crate::{
+    completion::complete::CompletionClient,
+    helpers::{command_helper::CommandHelper, dispatch::dispatch_print},
+};
 
 // Loads project's figment and merges the build cli arguments into it
 foundry_config::merge_impl_figment_convert!(ChiselParser, opts, evm_opts);
@@ -150,8 +153,8 @@ async fn main() -> eyre::Result<()> {
     }
 
     // Create a new rustyline Editor
-    let mut rl = Editor::<SolidityHelper, _>::new()?;
-    rl.set_helper(Some(SolidityHelper::default()));
+    let mut rl = Editor::<CommandHelper, _>::new()?;
+    rl.set_helper(Some(CommandHelper::new()));
 
     // automatically add lines to history
     rl.set_auto_add_history(true);

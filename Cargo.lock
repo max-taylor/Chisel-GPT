@@ -3,7 +3,7 @@
 version = 3
 
 [[package]]
-name = "AnvilGPT"
+name = "ChiselGPT"
 version = "0.1.0"
 dependencies = [
  "async-openai",
@@ -18,6 +18,7 @@ dependencies = [
  "foundry-config",
  "regex",
  "rustyline",
+ "solang-parser",
  "tokio",
  "yansi",
 ]
@@ -191,9 +192,9 @@ dependencies = [
 
 [[package]]
 name = "async-openai"
-version = "0.10.2"
+version = "0.10.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ea63299a026d3e5d977c2158eb5b8f354ffc9505f12622bf3383fb550a9115fa"
+checksum = "e5d5e93aca1b2f0ca772c76cadd43e965809df87ef98e25e47244c7f006c85d2"
 dependencies = [
  "backoff",
  "base64 0.21.0",
@@ -228,7 +229,7 @@ checksum = "0e97ce7de6cf12de5d7226c73f5ba9811622f4db3a5b91b55c53e987e5f91cba"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.13",
+ "syn 2.0.14",
 ]
 
 [[package]]
@@ -239,7 +240,7 @@ checksum = "b9ccdd8f2a161be9bd5c023df56f1b2a0bd1d83872ae53b71a84a12c9bf6e842"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.13",
+ "syn 2.0.14",
 ]
 
 [[package]]
@@ -557,7 +558,7 @@ checksum = "df8670b8c7b9dae1793364eafadf7239c40d669904660c5960d74cfd80b46a53"
 [[package]]
 name = "cast"
 version = "0.2.0"
-source = "git+https://github.com/foundry-rs/foundry.git#c49e5e1b1df95214059a9c92a211a8ae81bc21dd"
+source = "git+https://github.com/foundry-rs/foundry.git#388c3c0a528cdee61498372d52e605f993674570"
 dependencies = [
  "chrono",
  "ethers-contract",
@@ -598,7 +599,7 @@ checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 [[package]]
 name = "chisel"
 version = "0.1.1"
-source = "git+https://github.com/foundry-rs/foundry.git#c49e5e1b1df95214059a9c92a211a8ae81bc21dd"
+source = "git+https://github.com/foundry-rs/foundry.git#388c3c0a528cdee61498372d52e605f993674570"
 dependencies = [
  "bytes",
  "clap 4.2.1",
@@ -748,7 +749,7 @@ dependencies = [
  "heck",
  "proc-macro2",
  "quote",
- "syn 2.0.13",
+ "syn 2.0.14",
 ]
 
 [[package]]
@@ -812,7 +813,7 @@ dependencies = [
  "digest 0.10.6",
  "getrandom",
  "hmac 0.12.1",
- "k256 0.13.0",
+ "k256 0.13.1",
  "lazy_static",
  "serde",
  "sha2 0.10.6",
@@ -821,21 +822,19 @@ dependencies = [
 
 [[package]]
 name = "coins-bip39"
-version = "0.8.5"
+version = "0.8.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ad2a68a46b9d8cc90484f0689adc0e4c890eb215bf698ae52e5235bb88f40be7"
+checksum = "84f4d04ee18e58356accd644896aeb2094ddeafb6a713e056cef0c0a8e468c15"
 dependencies = [
  "bitvec 0.17.4",
  "coins-bip32",
  "getrandom",
- "hex",
  "hmac 0.12.1",
  "once_cell",
  "pbkdf2 0.12.1",
  "rand",
  "sha2 0.10.6",
  "thiserror",
- "tracing",
 ]
 
 [[package]]
@@ -1041,9 +1040,9 @@ dependencies = [
 
 [[package]]
 name = "crossbeam-channel"
-version = "0.5.7"
+version = "0.5.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cf2b3e8478797446514c91ef04bafcb59faba183e621ad488df88983cc14128c"
+checksum = "a33c2bf77f2df06183c3aa30d1e96c0695a313d4f9c453cc3762a6db39f99200"
 dependencies = [
  "cfg-if",
  "crossbeam-utils",
@@ -1206,7 +1205,7 @@ dependencies = [
  "proc-macro2",
  "quote",
  "scratch",
- "syn 2.0.13",
+ "syn 2.0.14",
 ]
 
 [[package]]
@@ -1223,7 +1222,7 @@ checksum = "2345488264226bf682893e25de0769f3360aac9957980ec49361b083ddaa5bc5"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.13",
+ "syn 2.0.14",
 ]
 
 [[package]]
@@ -1460,13 +1459,13 @@ dependencies = [
 
 [[package]]
 name = "ecdsa"
-version = "0.16.4"
+version = "0.16.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "106401dadc137d05cb0d4ab4d42be089746aefdfe8992df4d0edcf351c16ddca"
+checksum = "a48e5d537b8a30c0b023116d981b16334be1485af7ca68db3a2b7024cbc957fd"
 dependencies = [
  "der 0.7.3",
  "digest 0.10.6",
- "elliptic-curve 0.13.3",
+ "elliptic-curve 0.13.4",
  "rfc6979 0.4.0",
  "signature 2.1.0",
 ]
@@ -1510,9 +1509,9 @@ dependencies = [
 
 [[package]]
 name = "elliptic-curve"
-version = "0.13.3"
+version = "0.13.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "22cdacd4d6ed3f9b98680b679c0e52a823b8a2c7a97358d508fe247f2180c282"
+checksum = "75c71eaa367f2e5d556414a8eea812bc62985c879748d6403edabd9cb03f16e7"
 dependencies = [
  "base16ct 0.2.0",
  "crypto-bigint 0.5.1",
@@ -1522,7 +1521,7 @@ dependencies = [
  "group 0.13.0",
  "pkcs8",
  "rand_core",
- "sec1 0.7.1",
+ "sec1 0.7.2",
  "subtle",
  "zeroize",
 ]
@@ -1566,7 +1565,7 @@ dependencies = [
  "base64 0.13.1",
  "bytes",
  "hex",
- "k256 0.13.0",
+ "k256 0.13.1",
  "log",
  "rand",
  "rlp",
@@ -1788,12 +1787,12 @@ dependencies = [
  "cargo_metadata",
  "chrono",
  "convert_case 0.6.0",
- "elliptic-curve 0.13.3",
+ "elliptic-curve 0.13.4",
  "ethabi",
  "generic-array",
  "getrandom",
  "hex",
- "k256 0.13.0",
+ "k256 0.13.1",
  "num_enum",
  "once_cell",
  "open-fastrlp",
@@ -1901,7 +1900,7 @@ dependencies = [
  "coins-bip32",
  "coins-bip39",
  "coins-ledger",
- "elliptic-curve 0.13.3",
+ "elliptic-curve 0.13.4",
  "eth-keystore",
  "ethers-core",
  "futures-executor",
@@ -2106,7 +2105,7 @@ checksum = "3f9eec918d3f24069decb9af1554cad7c880e2da24a9afd88aca000531ab82c1"
 [[package]]
 name = "forge"
 version = "0.2.0"
-source = "git+https://github.com/foundry-rs/foundry.git#c49e5e1b1df95214059a9c92a211a8ae81bc21dd"
+source = "git+https://github.com/foundry-rs/foundry.git#388c3c0a528cdee61498372d52e605f993674570"
 dependencies = [
  "comfy-table",
  "ethers",
@@ -2135,7 +2134,7 @@ dependencies = [
 [[package]]
 name = "forge-doc"
 version = "0.1.0"
-source = "git+https://github.com/foundry-rs/foundry.git#c49e5e1b1df95214059a9c92a211a8ae81bc21dd"
+source = "git+https://github.com/foundry-rs/foundry.git#388c3c0a528cdee61498372d52e605f993674570"
 dependencies = [
  "auto_impl",
  "clap 4.2.1",
@@ -2163,7 +2162,7 @@ dependencies = [
 [[package]]
 name = "forge-fmt"
 version = "0.2.0"
-source = "git+https://github.com/foundry-rs/foundry.git#c49e5e1b1df95214059a9c92a211a8ae81bc21dd"
+source = "git+https://github.com/foundry-rs/foundry.git#388c3c0a528cdee61498372d52e605f993674570"
 dependencies = [
  "ariadne",
  "ethers-core",
@@ -2186,7 +2185,7 @@ dependencies = [
 [[package]]
 name = "foundry-cli"
 version = "0.2.0"
-source = "git+https://github.com/foundry-rs/foundry.git#c49e5e1b1df95214059a9c92a211a8ae81bc21dd"
+source = "git+https://github.com/foundry-rs/foundry.git#388c3c0a528cdee61498372d52e605f993674570"
 dependencies = [
  "async-trait",
  "bytes",
@@ -2247,7 +2246,7 @@ dependencies = [
 [[package]]
 name = "foundry-common"
 version = "0.1.0"
-source = "git+https://github.com/foundry-rs/foundry.git#c49e5e1b1df95214059a9c92a211a8ae81bc21dd"
+source = "git+https://github.com/foundry-rs/foundry.git#388c3c0a528cdee61498372d52e605f993674570"
 dependencies = [
  "clap 4.2.1",
  "comfy-table",
@@ -2276,7 +2275,7 @@ dependencies = [
 [[package]]
 name = "foundry-config"
 version = "0.2.0"
-source = "git+https://github.com/foundry-rs/foundry.git#c49e5e1b1df95214059a9c92a211a8ae81bc21dd"
+source = "git+https://github.com/foundry-rs/foundry.git#388c3c0a528cdee61498372d52e605f993674570"
 dependencies = [
  "Inflector",
  "dirs-next",
@@ -2305,7 +2304,7 @@ dependencies = [
 [[package]]
 name = "foundry-evm"
 version = "0.2.0"
-source = "git+https://github.com/foundry-rs/foundry.git#c49e5e1b1df95214059a9c92a211a8ae81bc21dd"
+source = "git+https://github.com/foundry-rs/foundry.git#388c3c0a528cdee61498372d52e605f993674570"
 dependencies = [
  "auto_impl",
  "bytes",
@@ -2337,7 +2336,7 @@ dependencies = [
 [[package]]
 name = "foundry-macros"
 version = "0.1.0"
-source = "git+https://github.com/foundry-rs/foundry.git#c49e5e1b1df95214059a9c92a211a8ae81bc21dd"
+source = "git+https://github.com/foundry-rs/foundry.git#388c3c0a528cdee61498372d52e605f993674570"
 dependencies = [
  "ethers-core",
  "foundry-common",
@@ -2347,17 +2346,17 @@ dependencies = [
 [[package]]
 name = "foundry-macros-impl"
 version = "0.0.0"
-source = "git+https://github.com/foundry-rs/foundry.git#c49e5e1b1df95214059a9c92a211a8ae81bc21dd"
+source = "git+https://github.com/foundry-rs/foundry.git#388c3c0a528cdee61498372d52e605f993674570"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.13",
+ "syn 2.0.14",
 ]
 
 [[package]]
 name = "foundry-utils"
 version = "0.2.0"
-source = "git+https://github.com/foundry-rs/foundry.git#c49e5e1b1df95214059a9c92a211a8ae81bc21dd"
+source = "git+https://github.com/foundry-rs/foundry.git#388c3c0a528cdee61498372d52e605f993674570"
 dependencies = [
  "ethers-addressbook",
  "ethers-contract",
@@ -2488,7 +2487,7 @@ checksum = "89ca545a94061b6365f2c7355b4b32bd20df3ff95f02da9329b34ccc3bd6ee72"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.13",
+ "syn 2.0.14",
 ]
 
 [[package]]
@@ -3360,13 +3359,13 @@ dependencies = [
 
 [[package]]
 name = "k256"
-version = "0.13.0"
+version = "0.13.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "955890845095ccf31ef83ad41a05aabb4d8cc23dc3cac5a9f5c89cf26dd0da75"
+checksum = "cadb76004ed8e97623117f3df85b17aaa6626ab0b0831e6573f104df16cd1bcc"
 dependencies = [
  "cfg-if",
- "ecdsa 0.16.4",
- "elliptic-curve 0.13.3",
+ "ecdsa 0.16.6",
+ "elliptic-curve 0.13.4",
  "once_cell",
  "sha2 0.10.6",
  "signature 2.1.0",
@@ -3666,7 +3665,7 @@ checksum = "8842972f23939443013dfd3720f46772b743e86f1a81d120d4b6fb090f87de1c"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.13",
+ "syn 2.0.14",
 ]
 
 [[package]]
@@ -4105,7 +4104,7 @@ dependencies = [
  "proc-macro2",
  "proc-macro2-diagnostics",
  "quote",
- "syn 2.0.13",
+ "syn 2.0.14",
 ]
 
 [[package]]
@@ -4144,7 +4143,7 @@ dependencies = [
  "pest_meta",
  "proc-macro2",
  "quote",
- "syn 2.0.13",
+ "syn 2.0.14",
 ]
 
 [[package]]
@@ -4415,7 +4414,7 @@ checksum = "606c4ba35817e2922a308af55ad51bab3645b59eae5c570d4a6cf07e36bd493b"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.13",
+ "syn 2.0.14",
  "version_check",
  "yansi",
 ]
@@ -5127,9 +5126,9 @@ dependencies = [
 
 [[package]]
 name = "sec1"
-version = "0.7.1"
+version = "0.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "48518a2b5775ba8ca5b46596aae011caa431e6ce7e4a67ead66d92f08884220e"
+checksum = "f0aec48e813d6b90b15f0b8948af3c63483992dee44c03e9930b3eebdabe046e"
 dependencies = [
  "base16ct 0.2.0",
  "der 0.7.3",
@@ -5203,22 +5202,22 @@ checksum = "cd0b0ec5f1c1ca621c432a25813d8d60c88abe6d3e08a3eb9cf37d97a0fe3d73"
 
 [[package]]
 name = "serde"
-version = "1.0.159"
+version = "1.0.160"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3c04e8343c3daeec41f58990b9d77068df31209f2af111e059e9fe9646693065"
+checksum = "bb2f3770c8bce3bcda7e149193a069a0f4365bda1fa5cd88e03bca26afc1216c"
 dependencies = [
  "serde_derive",
 ]
 
 [[package]]
 name = "serde_derive"
-version = "1.0.159"
+version = "1.0.160"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4c614d17805b093df4b147b51339e7e44bf05ef59fba1e45d83500bcfb4d8585"
+checksum = "291a097c63d8497e00160b166a967a4a79c64f3facdd01cbd7502231688d77df"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.13",
+ "syn 2.0.14",
 ]
 
 [[package]]
@@ -5307,9 +5306,9 @@ dependencies = [
 
 [[package]]
 name = "sha3"
-version = "0.10.6"
+version = "0.10.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bdf0c33fae925bdc080598b84bc15c55e7b9a4a43b3c704da051f977469691c9"
+checksum = "54c2bb1a323307527314a36bfb73f24febb08ce2b8a554bf4ffd6f51ad15198c"
 dependencies = [
  "digest 0.10.6",
  "keccak",
@@ -5594,9 +5593,9 @@ dependencies = [
 
 [[package]]
 name = "syn"
-version = "2.0.13"
+version = "2.0.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4c9da457c5285ac1f936ebd076af6dac17a61cfe7826f2076b4d015cf47bc8ec"
+checksum = "fcf316d5356ed6847742d036f8a39c3b8435cac10bd528a4bd461928a6ab34d5"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -5709,7 +5708,7 @@ checksum = "f9456a42c5b0d803c8cd86e73dd7cc9edd429499f37a3550d286d5e86720569f"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.13",
+ "syn 2.0.14",
 ]
 
 [[package]]
@@ -5813,7 +5812,7 @@ checksum = "61a573bdc87985e9d6ddeed1b3d864e8a302c847e40d647746df2f1de209d1ce"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.13",
+ "syn 2.0.14",
 ]
 
 [[package]]
@@ -6077,7 +6076,7 @@ checksum = "9e79c4d996edb816c91e4308506774452e55e95c3c9de07b6729e17e15a5ef81"
 [[package]]
 name = "ui"
 version = "0.2.0"
-source = "git+https://github.com/foundry-rs/foundry.git#c49e5e1b1df95214059a9c92a211a8ae81bc21dd"
+source = "git+https://github.com/foundry-rs/foundry.git#388c3c0a528cdee61498372d52e605f993674570"
 dependencies = [
  "crossterm 0.26.1",
  "ethers",

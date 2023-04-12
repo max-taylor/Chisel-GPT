@@ -161,7 +161,7 @@ impl CompletionClient {
 }
 
 // !chat Create a new contract with a method that takes in two uint256 values, multiplies the result and returns it. Then create an instance of the contract and call the method
-// !chat deal me 100 eth and create a new contract that hashes the result of multiplying 2 input
+// !chat deal me 100 eth and create a new contract that hashes the result of multiplying 2 inputs
 
 // !TODO bugg
 // !chat create a new contract that executes x*y/z

@@ -1,0 +1,22 @@
+[package]
+name = "AnvilGPT"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+chisel = { git = "https://github.com/foundry-rs/foundry.git" }
+foundry-common = { git = "https://github.com/foundry-rs/foundry.git" }
+foundry-cli = { git = "https://github.com/foundry-rs/foundry.git" }
+foundry-config = { git = "https://github.com/foundry-rs/foundry.git" }
+clap = "4.2.1"
+clap_complete = "4.2.0"
+clap_complete_fig = "4.2.0"
+fdlimit = "0.2.1"
+tokio = "1.27.0"
+rustyline = "11.0.0"
+yansi = "0.5.1"
+eyre = "0.6.8"
+async-openai = "0.10.2"
+regex = "1.7.3"

@@ -25,7 +25,7 @@ use yansi::Paint;
 
 use crate::{
     completion::complete::CompletionClient,
-    helpers::{command_helper::CommandHelper, dispatch::dispatch_print},
+    helpers::{command_helper::CommandHelper, dispatch::dispatch_command},
 };
 
 // Loads project's figment and merges the build cli arguments into it
@@ -189,7 +189,7 @@ async fn main() -> eyre::Result<()> {
                 if line.starts_with("!chat") {
                     completion.handle_chat_request(&mut dispatcher, line).await;
                 } else {
-                    dispatch_print(&mut dispatcher, &line).await;
+                    dispatch_command(&mut dispatcher, &line).await;
                 }
             }
             Err(ReadlineError::Interrupted) => {

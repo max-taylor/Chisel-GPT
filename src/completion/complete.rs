@@ -11,7 +11,7 @@ use async_openai::{
     Client,
 };
 
-use crate::helpers::dispatch::dispatch_print;
+use crate::helpers::dispatch::dispatch_command;
 
 use super::context::create_context_string;
 
@@ -118,7 +118,7 @@ impl CompletionClient {
             let command = chat_response.get(0).unwrap();
             println!("{}", command);
 
-            dispatch_print(dispatcher, &command).await;
+            dispatch_command(dispatcher, &command).await;
 
             chat_response.remove(0);
         }

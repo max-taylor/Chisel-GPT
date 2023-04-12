@@ -1,7 +1,7 @@
 use chisel::prelude::{ChiselDispatcher, DispatchResult};
 use yansi::Paint;
 
-pub async fn dispatch_print(dispatcher: &mut ChiselDispatcher, line: &str) {
+pub async fn dispatch_command(dispatcher: &mut ChiselDispatcher, line: &str) {
     // Dispatch and match results
     match dispatcher.dispatch(&line).await {
   DispatchResult::Success(msg) | DispatchResult::CommandSuccess(msg) => if let Some(msg) = msg {

@@ -172,13 +172,10 @@ async fn main() -> eyre::Result<()> {
         // Get the prompt from the dispatcher
         // Variable based on status of the last entry
         let prompt = dispatcher.get_prompt();
-        println!("{:?}", prompt);
         rl.helper_mut().unwrap().set_errored(dispatcher.errored);
 
-        println!("1");
         // Read the next line
         let next_string = rl.readline(prompt.as_ref());
-        println!("2");
 
         // Try to read the string
         match next_string {

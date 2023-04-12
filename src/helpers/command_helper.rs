@@ -6,7 +6,6 @@ use chisel::{
     prelude::COMMAND_LEADER,
     solidity_helper::{self, SolidityHelper},
 };
-use rustyline::Helper;
 use yansi::{Color, Style};
 
 pub struct CommandHelper {

@@ -1,3 +1,5 @@
+// Can only fit a subset of methods from this interface, due to its size
+
 pub const FOUNDRY_INTERFACE: &str = "
 The session imports the Cheats interface from import forge-std/Vm.sol, here is the interface:
 
@@ -37,10 +39,11 @@ Note that you can call methods on this interface using the global value 'Cheats 
 
 ";
 
-pub const FOUNDRY_INTERFACE_2: &str = "
-Inside the session there is this value: Cheats internal constant vm
+// The entire interface
+const FOUNDRY_INTERFACE_ENTIRE: &str = "
+The session imports the Cheats interface from import forge-std/Vm.sol, here is the interface:
 
-interface Vm is VmSafe {
+interface Cheats {
   // Sets block.timestamp
   function warp(uint256 newTimestamp) external;
   // Sets block.height
@@ -178,4 +181,7 @@ interface Vm is VmSafe {
   // Fetches the given transaction from the given fork and executes it on the current state
   function transact(uint256 forkId, bytes32 txHash) external;
 }
+
+Note that you can call methods on this interface using the global value 'Cheats internal constant vm', i.e; vm.deal(...)
+
 ";

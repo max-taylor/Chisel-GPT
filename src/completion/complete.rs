@@ -13,7 +13,7 @@ use async_openai::{
 
 use crate::helpers::dispatch::dispatch_print;
 
-use super::bot_role::create_context_string;
+use super::context::create_context_string;
 
 fn parse_response(input: &str) -> Vec<String> {
     let re = Regex::new(r"##Start##\s*([\s\S]+?)\s*##End##").unwrap();
@@ -94,16 +94,25 @@ impl CompletionClient {
         dispatcher: &mut ChiselDispatcher,
         line: String,
     ) -> OpenAIResult<()> {
-        println!("{}", Paint::blue("Getting command recipe from ChiselGPT"));
+        let is_tracing = match &dispatcher.session.session_source {
+            Some(result) => result.config.traces,
+            None => false,
+        };
+
+        if is_tracing {
+            println!("{}", Paint::blue("Getting command recipe from ChiselGPT"));
+        }
 
         let mut chat_response = self.get_chat_response(dispatcher, line).await.unwrap();
 
-        println!("{}", Paint::green("Got Recipe: "));
-        for (index, part) in chat_response.clone().iter().enumerate() {
-            println!("{}: {}", index, part);
-        }
+        if is_tracing {
+            println!("{}", Paint::green("Got Recipe: "));
+            for (index, part) in chat_response.clone().iter().enumerate() {
+                println!("{}: {}", index, part);
+            }
 
-        println!("{}", Paint::green("Running..."));
+            println!("{}", Paint::green("Running..."));
+        }
 
         while chat_response.len() > 0 {
             let command = chat_response.get(0).unwrap();

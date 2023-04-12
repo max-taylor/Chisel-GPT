@@ -87,7 +87,7 @@ Response:
 ```";
 
 pub fn create_context_string(help_text: String, chisel_context: String) -> String {
-    String::from("I want you to act as a translator between written native language and Chisel commands. Chisel is a REPL for executing commands in a blockchain environment, inside Chisel it allows all valid solidity syntax and it also some special methods for controlling the environment. When I want you to translate a command for me I will prefix my command with: !chat. 
+    String::from("I want you to act as ChiselGPT, a translator between written native language and Chisel commands. Chisel is a REPL for executing commands in a blockchain environment, inside Chisel it allows all valid solidity syntax and it also some special methods for controlling the environment. When I want you to translate a command for me I will prefix my command with: !chat. 
     
     Here is the chisel documentation for the other environment commands you can execute:
     ") + &help_text + 
@@ -97,32 +97,32 @@ pub fn create_context_string(help_text: String, chisel_context: String) -> Strin
     
     Note that the documentation for some commands lets you use two potential options: !help | !h, preferably use the longer name in these situations; !help, as that is more readable.
 
-    When commands are executed in Chisel they are executed inside the 'run' method of a contract titled 'REPL'. When new variables are created they are created inside the 'run' method and can still be called normally. For example the context before a command might be:
+    When commands are executed in Chisel they are executed within the context of the 'run' method inside a contract titled 'REPL'. These new commands that are executed are appended to the run function. This is important because you can call re-use variables inside the run function. Here is the entire context of the REPL contract and run method:" + &chisel_context + FOUNDRY_INTERFACE +
 
-    contract REPL {
-      Cheats internal constant vm = Cheats(address(uint160(uint256(keccak256('hevm cheat code')))));
-  
-      /// @notice REPL contract entry point
-      function run() public {
-          vm.deal(address(this), 100 ether);
-      }
-    } 
-
-    Then if you run the command: address newAddress = address(this), the context will be updated to be:
-
-    contract REPL {
-      Cheats internal constant vm = Cheats(address(uint160(uint256(keccak256('hevm cheat code')))));
-
-      /// @notice REPL contract entry point
-      function run() public {
-          vm.deal(address(this), 100 ether);
-          address newAddress = address(this); // Added this line
-      }
-    }
-    
-    So keep this in mind when creating new variables because the names need to be unique. Here is the REPL contract and surrounding contract:" + &chisel_context + FOUNDRY_INTERFACE +
-
-    "Here as some examples of what I mean, the request is prefixed with 'Request:' and the response is prefixed with 'Response:'. The responses you send must be in the same format as the examples:" + EXAMPLES + 
+    "Here as some examples of some commands that I sent and requests received, note that requests start with '!chat' and I've added Response: to the ChiselGPT responses to show where the response starts. The responses you send must be in the same format as the examples:" + EXAMPLES + 
 
     "You must return the commands matching the following format: '##Start##' to start writing chisel commands, '##End##' to end the commands and individual commands are wrapped in backticks; `!clear`. The examples follow the formatting so refer to those. Only return the commands, do not return any other information, the returned commands will be passed directly back into Chisel. "
 }
+
+// For example the context before a command might be:
+
+// contract REPL {
+//   Cheats internal constant vm = Cheats(address(uint160(uint256(keccak256('hevm cheat code')))));
+
+//   /// @notice REPL contract entry point
+//   function run() public {
+//       vm.deal(address(this), 100 ether);
+//   }
+// } 
+
+// Then if you run the command: address newAddress = address(this), the context will be updated to be:
+
+// contract REPL {
+//   Cheats internal constant vm = Cheats(address(uint160(uint256(keccak256('hevm cheat code')))));
+
+//   /// @notice REPL contract entry point
+//   function run() public {
+//       vm.deal(address(this), 100 ether);
+//       address newAddress = address(this); // Added this line
+//   }
+// }

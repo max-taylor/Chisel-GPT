@@ -1,3 +1,3 @@
-mod bot_role;
 pub mod complete;
+mod context;
 mod foundry_interface;

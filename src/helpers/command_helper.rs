@@ -1,10 +1,10 @@
-// ! Had to copy most of solidity_helper from foundry to be able to modify the highlight method so that it returns a green color for commands prefixed with '!chat'. Rust makes it very difficult to modify struct's outside of scope, tried dynamic dispatching (at the bottom of the file) but didn't work properly
+// ! Had to copy most of solidity_helper from foundry to be able to modify the highlight method so that it returns a green color for commands prefixed with '!chat'. Rust makes it very difficult to modify struct's outside of scope, tried dynamic dispatching but that didn't work
 
-use std::{borrow::Cow, str::FromStr};
+use std::borrow::Cow;
 
 use chisel::{
-    prelude::{ChiselCommand, COMMAND_LEADER, PROMPT_ARROW},
-    solidity_helper::{SolidityHelper, SpannedStyle},
+    prelude::{COMMAND_LEADER, PROMPT_ARROW},
+    solidity_helper::SolidityHelper,
 };
 use rustyline::{
     completion::Completer,
@@ -240,4 +240,3 @@ impl Hinter for CommandHelper {
 }
 
 impl Helper for CommandHelper {}
-

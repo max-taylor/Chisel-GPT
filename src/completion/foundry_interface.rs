@@ -21,14 +21,8 @@ function txGasPrice(uint256 newGasPrice) external;
 function store(address target, bytes32 slot, bytes32 value) external;
 // Sets the nonce of an account; must be higher than the current nonce of the account
 function setNonce(address account, uint64 newNonce) external;
-// Sets the *next* call's msg.sender to be the input address
-function prank(address msgSender) external;
 // Sets all subsequent calls' msg.sender to be the input address until `stopPrank` is called
 function startPrank(address msgSender) external;
-// Sets the *next* call's msg.sender to be the input address, and the tx.origin to be the second input
-function prank(address msgSender, address txOrigin) external;
-// Sets all subsequent calls' msg.sender to be the input address until `stopPrank` is called, and the tx.origin to be the second input
-function startPrank(address msgSender, address txOrigin) external;
 // Resets subsequent calls' msg.sender to be `address(this)`
 function stopPrank() external;
 // Sets an address' balance

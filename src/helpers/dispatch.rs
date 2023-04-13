@@ -1,6 +1,7 @@
 use chisel::prelude::{ChiselDispatcher, DispatchResult};
 use yansi::Paint;
 
+// The main logging function for chisel logs
 pub async fn dispatch_command(dispatcher: &mut ChiselDispatcher, line: &str) {
     // Dispatch and match results
     match dispatcher.dispatch(&line).await {

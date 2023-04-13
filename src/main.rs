@@ -1,8 +1,5 @@
-//! Chisel CLI
-//!
-//! This module contains the core readline loop for the Chisel CLI as well as the
-//! executable's `main` function.
-//!
+//! Chisel CLI start-up script, modified to introduce the !chat command
+
 mod completion;
 mod helpers;
 

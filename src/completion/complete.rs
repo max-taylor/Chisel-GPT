@@ -22,10 +22,7 @@ fn parse_response(input: &str) -> Vec<String> {
         println!("{}", Paint::green(content));
         let commands: Vec<String> = content
             .split("`")
-            .map(|s| {
-                let mut owned = String::from(s.trim());
-                owned
-            })
+            .map(|s| String::from(s.trim()))
             .filter(|s| s.len() > 0)
             .collect();
 
@@ -43,7 +40,7 @@ fn build_request(
     let request = CreateChatCompletionRequestArgs::default()
         .max_tokens(512u16)
         .model("gpt-3.5-turbo")
-        .temperature(0.0) // To get deterministic results
+        .temperature(0.0) // To get close-to deterministic results
         .messages([
             ChatCompletionRequestMessageArgs::default()
                 .role(Role::System)
@@ -153,11 +150,3 @@ impl CompletionClient {
         Ok(parse_response(choice))
     }
 }
-
-// !chat Create a new contract with a method that takes in two uint256 values, multiplies the result and returns it. Then create an instance of the contract and call the method
-// !chat deal me 100 eth and create a new contract that hashes the result of multiplying 2 inputs
-
-// !TODO bugg
-// !chat create a new contract that executes x*y/z
-// !chat create an erc20 contract with a fallback that reverts, then call the fallback
-// !chat create a function that showcases some unique assembly methods, add comments describing them and call the method to show it working

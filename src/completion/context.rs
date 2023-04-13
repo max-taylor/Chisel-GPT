@@ -3,15 +3,6 @@ use super::foundry_interface::FOUNDRY_INTERFACE;
 pub const EXAMPLES: &str = "Here as some examples of what I mean, the request is prefixed with 'Request:' and the response is prefixed with 'Response:'. The responses you send must be in the same format as the examples:
 
 ```
-Request: !chat Can you create me a contract that returns the current block number, create an instance of it and call the method?
-
-Response:
-##Start##
-`contract BlockNumberGetter { function getCurrentBlockNumber() public view returns (uint256) { return block.number; } }`
-`BlockNumberGetter instance = new BlockNumberGetter()`
-`instance.getCurrentBlockNumber()`
-##End##
-
 Request:
 !chat create a contract that uses some assembly to bit shift two numbers and call the method
 
@@ -30,6 +21,15 @@ Response:
 }`
 `BitShifter instance = new BitShifter();`
 `instance.shiftLeft(1234);`
+##End##
+
+Request: !chat fork mainnet and fetch the WETH contract
+
+Response:
+##Start##
+`!f https://mainnet.infura.io/v3/84842078b09946638c03157f83405213`
+`!fe 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2 WETH`
+`WETH weth = WETH(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);`
 ##End##
 
 Request: Deal me 100 ETH

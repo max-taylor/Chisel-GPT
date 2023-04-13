@@ -21,7 +21,7 @@ fn parse_response(input: &str) -> Vec<String> {
         let content = captures.get(1).unwrap().as_str();
         println!("{}", Paint::green(content));
         let commands: Vec<String> = content
-            .split("||CMD||")
+            .split("`")
             .map(|s| {
                 let mut owned = String::from(s.trim());
                 owned
@@ -160,3 +160,4 @@ impl CompletionClient {
 // !TODO bugg
 // !chat create a new contract that executes x*y/z
 // !chat create an erc20 contract with a fallback that reverts, then call the fallback
+// !chat create a function that showcases some unique assembly methods, add comments describing them and call the method to show it working

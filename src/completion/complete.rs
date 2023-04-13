@@ -19,8 +19,9 @@ fn parse_response(input: &str) -> Vec<String> {
     let re = Regex::new(r"##Start##\s*([\s\S]+?)\s*##End##").unwrap();
     if let Some(captures) = re.captures(input) {
         let content = captures.get(1).unwrap().as_str();
+        println!("{}", Paint::green(content));
         let commands: Vec<String> = content
-            .split('`')
+            .split("||CMD||")
             .map(|s| {
                 let mut owned = String::from(s.trim());
                 owned
@@ -39,13 +40,6 @@ fn build_request(
     help_text: String,
     chisel_context: String,
 ) -> Result<CreateChatCompletionRequest, Box<dyn Error>> {
-    // println!(
-    //     "{}",
-    //     Paint::green(create_context_string(
-    //         help_text.clone(),
-    //         chisel_context.clone()
-    //     ))
-    // );
     let request = CreateChatCompletionRequestArgs::default()
         .max_tokens(512u16)
         .model("gpt-3.5-turbo")

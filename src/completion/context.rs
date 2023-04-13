@@ -84,10 +84,24 @@ Response:
 ##Start##
 `vm.deal(address(this))`
 
+Request: !chat can you fork mainnet
+
+Response:
+##Start##
+`!f https://mainnet.infura.io/v3/84842078b09946638c03157f83405213`
+##End##
+
 ```";
 
-pub fn create_context_string(help_text: String, chisel_context: String) -> String {
-    String::from("I want you to act as ChiselGPT, a translator between written native language and Chisel commands. Chisel is a REPL for executing commands in a blockchain environment, inside Chisel it allows all valid solidity syntax and it also some special methods for controlling the environment. When I want you to translate a command for me I will prefix my command with: !chat. 
+// Request: !chat can you fork mainnet with this api key 84842078b09946638c03157f83405213
+
+// Response:
+// ##Start##
+// `!f https://mainnet.infura.io/v3/84842078b09946638c03157f83405213`
+// ##End##
+
+pub fn create_context_string2(help_text: String, chisel_context: String) -> String {
+    String::from("I want you to act as ChiselGPT, a translator between native language and Chisel commands. Chisel is a REPL for executing commands in a blockchain environment, inside Chisel it allows all valid solidity syntax and it also some special methods for controlling the environment. When I want you to translate a command for me I will prefix my command with: !chat. 
     
     Here is the chisel documentation for the other environment commands you can execute:
     ") + &help_text + 
@@ -103,6 +117,45 @@ pub fn create_context_string(help_text: String, chisel_context: String) -> Strin
 
     "You must return the commands matching the following format: '##Start##' to start writing chisel commands, '##End##' to end the commands and individual commands are wrapped in backticks; `!clear`. The examples follow the formatting so refer to those. Only return the commands, do not return any other information, the returned commands will be passed directly back into Chisel. "
 }
+
+pub fn create_context_string(help_text: String, chisel_context: String) -> String {
+  String::from("I want you to act as ChiselGPT, a translator between native language and Chisel commands. Chisel is a REPL for executing commands in a blockchain environment. It supports all valid Solidity syntax and some special methods for controlling the environment. When I want you to translate a command for me, I will prefix my command with: !chat.
+
+  Here is the chisel documentation for the other environment commands you can execute:
+  
+  ") + &help_text +
+  
+  "
+  
+  When the documentation for some commands provides two potential options, such as !help or !h, please use the longer name, i.e., !help, as it is more readable.
+  
+  Commands executed in Chisel are done so within the context of the 'run' method inside a contract titled 'REPL'. New commands are appended to the run function, allowing you to reuse variables within the run function. Here is the entire context of the REPL contract and run method:
+  
+  " + &chisel_context + FOUNDRY_INTERFACE +
+  
+  "
+  
+  Here are some examples of commands that I sent and the responses received. Note that requests start with '!chat,' and I've added 'Response:' to the ChiselGPT responses to indicate the beginning of the response. Please ensure your responses follow the same format as the examples:
+  
+  " + EXAMPLES +
+  
+  "
+  
+  When returning commands, follow this format: Start with '##Start##' and end with '##End##.' Individual commands must be wrapped in backticks, like `!clear`. Refer to the examples for proper formatting. Return only the commands, as they will be passed directly back into Chisel. Do not include any additional information in your response.
+  
+  This is important! when you return codeblocks they must be wrapped in a single pair of backticks:
+  
+  `contract ERC20Token {
+    string public name;
+    string public symbol;
+    ...
+  }`
+  
+  The world will end if you fail to do this
+  "
+}
+
+
 
 // For example the context before a command might be:
 
@@ -126,3 +179,5 @@ pub fn create_context_string(help_text: String, chisel_context: String) -> Strin
 //       address newAddress = address(this); // Added this line
 //   }
 // }
+
+// !fetch 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2 WETH

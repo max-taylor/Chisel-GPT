@@ -50,16 +50,6 @@ impl CommandHelper {
         self
     }
 
-    /// Get styles for a solidity source string
-    pub fn get_styles(input: &str) -> Vec<SpannedStyle> {
-        SolidityHelper::get_styles(input)
-    }
-
-    /// Get contiguous styles for a solidity source string
-    pub fn get_contiguous_styles(input: &str) -> Vec<SpannedStyle> {
-        SolidityHelper::get_contiguous_styles(input)
-    }
-
     /// Highlights a solidity source string
     pub fn highlight(input: &str) -> Cow<str> {
         if input.starts_with("!chat") {
@@ -251,45 +241,3 @@ impl Hinter for CommandHelper {
 
 impl Helper for CommandHelper {}
 
-// pub struct CommandHelper {
-//     solidity_helper: CommandHelper,
-// }
-
-// impl CommandHelper {
-//     pub fn new() -> Self {
-//         Self {
-//             solidity_helper: CommandHelper::default(),
-//         }
-//     }
-
-// }
-
-// impl Validator for CommandHelper {}
-
-// impl Highlighter for CommandHelper {}
-
-// impl Completer for CommandHelper {
-//     type Candidate = String;
-// }
-
-// impl Hinter for CommandHelper {
-//     type Hint = String;
-// }
-
-// impl Helper for CommandHelper {}
-
-// impl std::ops::Deref for CommandHelper {
-//     type Target = CommandHelper;
-
-//     fn deref(&self) -> &Self::Target {
-//         println!("HERE");
-//         &self.solidity_helper
-//     }
-// }
-
-// impl std::ops::DerefMut for CommandHelper {
-//     fn deref_mut(&mut self) -> &mut Self::Target {
-//         println!("HERE22");
-//         &mut self.solidity_helper
-//     }
-// }

@@ -94,7 +94,7 @@ impl CompletionClient {
             println!("{}", Paint::blue("Getting command recipe from ChiselGPT"));
         }
 
-        let mut chat_response = self.get_chat_response(dispatcher, line).await.unwrap();
+        let chat_response = self.get_chat_response(dispatcher, line).await.unwrap();
 
         if is_tracing {
             println!("{}", Paint::green("Got Recipe: "));
@@ -105,13 +105,10 @@ impl CompletionClient {
             println!("{}", Paint::green("Running..."));
         }
 
-        while chat_response.len() > 0 {
-            let command = chat_response.get(0).unwrap();
+        for command in chat_response {
             println!("{}", command);
 
             dispatch_command(dispatcher, &command).await;
-
-            chat_response.remove(0);
         }
 
         Ok(())

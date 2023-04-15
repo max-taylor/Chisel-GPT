@@ -40,5 +40,4 @@ Feel free to submit PR's or issues
 
 - [ ] Include previous messages and responses in the openai request
 - [ ] Modify !help, to include the custom command; !chat
-- [ ] Replace the async_openai package with a package that allows you to set the seed, this will allow full deterministic responses
 - [ ] Improve the prompt

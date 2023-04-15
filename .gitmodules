@@ -6,3 +6,7 @@
 	path = lib/openzeppelin-contracts
 	url = https://github.com/openzeppelin/openzeppelin-contracts
 	branch = v4.8.3
+[submodule "lib/safe-contracts"]
+	path = lib/safe-contracts
+	url = https://github.com/safe-global/safe-contracts
+	branch = 069992ceb353d993aa3b7d66f7a09aac780ec9fe

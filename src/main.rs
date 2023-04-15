@@ -177,7 +177,10 @@ async fn main() -> eyre::Result<()> {
                 interrupt = false;
 
                 if line.starts_with("!chat") {
-                    completion.handle_chat_request(&mut dispatcher, line).await;
+                    completion
+                        .handle_chat_request(&mut dispatcher, line)
+                        .await
+                        .unwrap();
                 } else {
                     dispatch_command(&mut dispatcher, &line).await;
                 }

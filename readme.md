@@ -18,9 +18,17 @@ Commands can be requested by prefixing your request with `!chat`, for example:
 
 # Usage
 
-In order to send requests to OpenAI for completion requests, it expects an environment variable for `OPENAI_API_KEY`
+First clone the repository
 
-Clone the repository, then simply run:
+Then in order to send requests to OpenAI for natural language to Solidity/Chisel commands, it requires an api key.
+
+To set this on a MAC or Linux do:
+
+```bash
+export OPENAI_API_KEY=...
+```
+
+Now run the tool with:
 
 ```rust
 cargo run

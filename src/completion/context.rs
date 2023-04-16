@@ -3,10 +3,9 @@ use super::foundry_interface::FOUNDRY_INTERFACE;
 pub fn create_context_string(help_text: String, chisel_context: String) -> String {
     String::from("This prompt is designed to help you convert natural language text into Chisel commands and/or Solidity code. Follow the guidelines provided below and use the examples as a reference for your conversions:
 
-  1. Use the delimiter '|||' to separate multiple commands.
-  2. Use '##START##' to mark the start of commands and '##END##' to mark the end of the commands.
-  3. Chisel commands are accessed with the exclamation mark prefix.
-  4. When writing Solidity code, it is appended to the Chisel session source code.
+  1. Use '##START##' to mark the start of commands and '##END##' to mark the end of the commands.
+  2. Chisel commands are accessed with the exclamation mark prefix.
+  3. When writing Solidity code, it is appended to the Chisel session source code.
 
   Here is the documentation for Chisel commands: ") +
     &help_text + "
@@ -28,16 +27,26 @@ pub fn create_context_string(help_text: String, chisel_context: String) -> Strin
   Examples of expected output:
 
   1. Input: !chat Create a new contract called 'Token' with a symbol 'TKN', total supply of 1000000, and 18 decimals. Then, reset the current Chisel session.
-     Output: ##START##!clear|||contract Token { string public constant symbol = 'TKN'; uint256 public constant totalSupply = 1000000 * 10**18; uint8 public constant decimals = 18; }|||!clear##END##
+     Output: ##START##
+     !clear
+     contract Token { string public constant symbol = 'TKN'; uint256 public constant totalSupply = 1000000 * 10**18; uint8 public constant decimals = 18; }
+     !clear
+     ##END##
 
   2. Input: !chat Write a function to set a new value for a given variable.
      Output: ##START##function setValue(uint256 _newValue) public { value = _newValue; }##END##
 
   3. Input: !chat Initialize a variable 'owner' with the address deploying the contract.
-     Output: ##START##address public owner;|||constructor() { owner = msg.sender; }##END##
+     Output: ##START##
+     address public owner;
+     constructor() { owner = msg.sender; }
+     ##END##
 
   4. Input: !chat Reset the current Chisel session and show Chisel documentation.
-     Output: ##START##!clear|||!help##END##
+     Output: ##START##
+     !clear
+     !help
+     ##END##
 
   5. Input: !chat create a contract that uses some assembly to bit shift two numbers and call the method
      Output:
@@ -51,16 +60,16 @@ pub fn create_context_string(help_text: String, chisel_context: String) -> Strin
              }
              return result;
          }
-     }|||
-     BitShifter instance = new BitShifter();|||
+     }
+     BitShifter instance = new BitShifter();
      instance.shiftLeft(1234);
      ##END##
 
   6. Input: !chat fork mainnet and fetch the WETH contract
      Output:
      ##START##
-     !f https://mainnet.infura.io/v3/84842078b09946638c03157f83405213|||
-     !fe 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2 WETH|||
+     !f https://mainnet.infura.io/v3/84842078b09946638c03157f83405213
+     !fe 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2 WETH
      WETH weth = WETH(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
      ##END##
 
@@ -70,6 +79,6 @@ pub fn create_context_string(help_text: String, chisel_context: String) -> Strin
     vm.deal(address(this))
     ##END##
   
-  Remember it is extremely important you follow these response standards: use the delimiter '|||' to separate multiple commands and use '##START##' to mark the start of commands and '##END##' to mark the end of the commands.
+  Remember it is extremely important you use '##START##' to mark the start of commands and '##END##' to mark the end of the commands.
   "
 }

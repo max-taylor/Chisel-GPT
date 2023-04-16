@@ -16,20 +16,29 @@ use crate::helpers::dispatch::dispatch_command;
 use super::context::create_context_string;
 
 fn parse_response(input: &str) -> Vec<String> {
-    let re = Regex::new(r"##Start##\s*([\s\S]+?)\s*##End##").unwrap();
-    if let Some(captures) = re.captures(input) {
-        let content = captures.get(1).unwrap().as_str();
-        println!("{}", Paint::green(content));
-        let commands: Vec<String> = content
-            .split("`")
-            .map(|s| String::from(s.trim()))
-            .filter(|s| s.len() > 0)
-            .collect();
+    let start_tag = "##START##";
+    let end_tag = "##END##";
+    let mut commands = Vec::new();
 
-        return commands;
+    if let (Some(start), Some(end)) = (input.find(start_tag), input.rfind(end_tag)) {
+        if start < end {
+            let stripped_response = &input[start + start_tag.len()..end];
+            let parts: Vec<&str> = stripped_response
+                .split("|||")
+                .map(|s| s.trim())
+                .filter(|s| s.len() > 0)
+                .collect();
+            for part in parts {
+                commands.push(part.to_string());
+            }
+        }
     }
 
-    unimplemented!("Error: {}", Paint::red(input));
+    if commands.len() == 0 {
+        println!("No Commands Found: {}", Paint::red(input));
+    }
+
+    commands
 }
 
 fn build_request(

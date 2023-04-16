@@ -7,15 +7,15 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Debug executable 'AnvilGPT'",
+      "name": "Debug executable 'ChiselGPT'",
       "cargo": {
         "args": [
           "build",
-          "--bin=AnvilGPT",
-          "--package=AnvilGPT"
+          "--bin=ChiselGPT",
+          "--package=ChiselGPT"
         ],
         "filter": {
-          "name": "AnvilGPT",
+          "name": "ChiselGPT",
           "kind": "bin"
         }
       },
@@ -25,16 +25,16 @@
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Debug unit tests in executable 'AnvilGPT'",
+      "name": "Debug unit tests in executable 'ChiselGPT'",
       "cargo": {
         "args": [
           "test",
           "--no-run",
-          "--bin=AnvilGPT",
-          "--package=AnvilGPT"
+          "--bin=ChiselGPT",
+          "--package=ChiselGPT"
         ],
         "filter": {
-          "name": "AnvilGPT",
+          "name": "ChiselGPT",
           "kind": "bin"
         }
       },

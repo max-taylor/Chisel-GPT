@@ -4,7 +4,6 @@ pub const FOUNDRY_INTERFACE: &str = "
 The session imports the Cheats interface from import forge-std/Vm.sol, here is the interface:
 
 interface Cheats {
-// Sets an address' balance
 // Sets block.timestamp
 function warp(uint256 newTimestamp) external;
 // Sets block.height

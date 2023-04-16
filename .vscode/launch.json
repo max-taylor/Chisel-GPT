@@ -22,24 +22,5 @@
       "args": [],
       "cwd": "${workspaceFolder}"
     },
-    {
-      "type": "lldb",
-      "request": "launch",
-      "name": "Debug unit tests in executable 'ChiselGPT'",
-      "cargo": {
-        "args": [
-          "test",
-          "--no-run",
-          "--bin=ChiselGPT",
-          "--package=ChiselGPT"
-        ],
-        "filter": {
-          "name": "ChiselGPT",
-          "kind": "bin"
-        }
-      },
-      "args": [],
-      "cwd": "${workspaceFolder}"
-    }
   ]
 }

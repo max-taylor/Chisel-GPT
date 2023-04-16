@@ -4,24 +4,19 @@ pub const FOUNDRY_INTERFACE: &str = "
 The session imports the Cheats interface from import forge-std/Vm.sol, here is the interface:
 
 interface Cheats {
-// Sets an address' balance
 // Sets block.timestamp
 function warp(uint256 newTimestamp) external;
 // Sets block.height
 function roll(uint256 newHeight) external;
 // Sets block.basefee
 function fee(uint256 newBasefee) external;
-// Sets block.difficulty
-function difficulty(uint256 newDifficulty) external;
 // Sets block.chainid
 function chainId(uint256 newChainId) external;
 // Sets tx.gasprice
 function txGasPrice(uint256 newGasPrice) external;
-// Stores a value to an address' storage slot.
-function store(address target, bytes32 slot, bytes32 value) external;
 // Sets the nonce of an account; must be higher than the current nonce of the account
 function setNonce(address account, uint64 newNonce) external;
-// Sets all subsequent calls' msg.sender to be the input address until `stopPrank` is called
+// Sets all calls' msg.sender to be the input address, until `stopPrank` is called
 function startPrank(address msgSender) external;
 // Resets subsequent calls' msg.sender to be `address(this)`
 function stopPrank() external;

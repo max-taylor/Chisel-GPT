@@ -1,5 +1,4 @@
 use chisel::prelude::{ChiselCommand, ChiselDispatcher, DispatchResult};
-use regex::Regex;
 use std::error::Error;
 use yansi::Paint;
 
@@ -11,26 +10,9 @@ use async_openai::{
     Client,
 };
 
-use crate::helpers::dispatch::dispatch_command;
+use crate::helpers::{dispatch::dispatch_command, split_commands::split_commands};
 
 use super::context::create_context_string;
-
-fn parse_response(input: &str) -> Vec<String> {
-    let re = Regex::new(r"##Start##\s*([\s\S]+?)\s*##End##").unwrap();
-    if let Some(captures) = re.captures(input) {
-        let content = captures.get(1).unwrap().as_str();
-        println!("{}", Paint::green(content));
-        let commands: Vec<String> = content
-            .split("`")
-            .map(|s| String::from(s.trim()))
-            .filter(|s| s.len() > 0)
-            .collect();
-
-        return commands;
-    }
-
-    unimplemented!("Error: {}", Paint::red(input));
-}
 
 fn build_request(
     request: String,
@@ -144,6 +126,6 @@ impl CompletionClient {
 
         let choice = &response.choices.get(0).unwrap().message.content;
 
-        Ok(parse_response(choice))
+        Ok(split_commands(choice))
     }
 }

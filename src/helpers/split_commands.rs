@@ -1,11 +1,7 @@
-use yansi::Paint;
-
 const START_TAG: &str = "##START##";
 const END_TAG: &str = "##END##";
 
 pub fn split_commands(input: &str) -> Vec<String> {
-    println!("{}", Paint::green(input));
-
     let mut commands = Vec::new();
 
     // TODO: If Some(start) but no END, throw an error, this means the response size was too large, long-term we could query ChatGPT for the rest of the response and join them

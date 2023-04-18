@@ -1,7 +1,8 @@
 use super::foundry_interface::FOUNDRY_INTERFACE;
 
 pub fn create_context_string(help_text: String, chisel_context: String) -> String {
-    String::from("This prompt is designed to help you convert natural language text into Chisel commands and/or Solidity code. Follow the guidelines provided below and use the examples as a reference for your conversions:
+    String::from("
+  This prompt is designed to help you convert natural language text into Chisel commands and/or Solidity code. Follow the guidelines provided below and use the examples as a reference for your conversions:
 
   1. Use '##START##' to mark the start of commands and '##END##' to mark the end of the commands.
   2. Chisel commands are accessed with the exclamation mark prefix.
@@ -15,8 +16,8 @@ pub fn create_context_string(help_text: String, chisel_context: String) -> Strin
     - If you write a function block, it is added into the REPL contract code.
     - If you write single line Solidity code, it is added to the run() method inside the REPL contract.
 
-  You can re-use variables inside the REPL contract and also variables declared inside the run() method. Make sure not to use other variables that don't exist anywhere else because that will cause errors.
-
+  You can use variables inside the REPL contract or variables declared inside the run() method of that contract, ensure when prompted you prioritize those variables instead of creating new ones. When you create new variables the names must be unique, so you must ensure that another variable inside the REPL contract or inside the run() method of that contract doesn't exist.
+  
   And here is the current Chisel session source code: " +
     &chisel_context + 
     &FOUNDRY_INTERFACE +
@@ -77,6 +78,12 @@ pub fn create_context_string(help_text: String, chisel_context: String) -> Strin
     Output:
     ##START##
     vm.deal(address(this))
+    ##END##
+
+  8. Input: !chat using the local variable myERC20, transfer some tokens
+    Output:
+    ##START##
+    myERC20.transfer(address(this), 50);
     ##END##
   
   Remember it is extremely important you use '##START##' to mark the start of commands and '##END##' to mark the end of the commands.

@@ -3,27 +3,6 @@
 version = 3
 
 [[package]]
-name = "ChiselGPT"
-version = "0.1.0"
-dependencies = [
- "async-openai",
- "chisel",
- "clap 4.2.1",
- "clap_complete",
- "clap_complete_fig",
- "eyre",
- "fdlimit",
- "foundry-cli",
- "foundry-common",
- "foundry-config",
- "regex",
- "rustyline",
- "solang-parser",
- "tokio",
- "yansi",
-]
-
-[[package]]
 name = "Inflector"
 version = "0.11.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -625,6 +604,27 @@ dependencies = [
  "time 0.3.20",
  "tokio",
  "vergen",
+ "yansi",
+]
+
+[[package]]
+name = "chisel_gpt"
+version = "0.1.0"
+dependencies = [
+ "async-openai",
+ "chisel",
+ "clap 4.2.1",
+ "clap_complete",
+ "clap_complete_fig",
+ "eyre",
+ "fdlimit",
+ "foundry-cli",
+ "foundry-common",
+ "foundry-config",
+ "regex",
+ "rustyline",
+ "solang-parser",
+ "tokio",
  "yansi",
 ]
 

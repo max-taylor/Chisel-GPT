@@ -4,7 +4,6 @@ const END_TAG: &str = "##END##";
 pub fn split_commands(input: &str) -> Vec<String> {
     let mut commands = Vec::new();
 
-    // TODO: If Some(start) but no END, throw an error, this means the response size was too large, long-term we could query ChatGPT for the rest of the response and join them
     if let (Some(start), Some(end)) = (input.find(START_TAG), input.find(END_TAG)) {
         // Only look for commands if start is greater than the end
         if start < end {
@@ -26,7 +25,8 @@ pub fn split_commands(input: &str) -> Vec<String> {
                         || line.starts_with("function")
                         || line.starts_with("constructor")
                         || line.starts_with("if")
-                        || line.starts_with("else"))
+                        || line.starts_with("else")
+                        || line.starts_with("assembly"))
                 {
                     nested_total += 1;
                 } else if line.starts_with("interface") {
@@ -48,7 +48,10 @@ pub fn split_commands(input: &str) -> Vec<String> {
                         }
                     }
                 } else {
-                    commands.push(line.to_string());
+                    // Ignore single line comments
+                    if !line.starts_with("//") {
+                        commands.push(line.to_string());
+                    }
                 }
             }
         }
@@ -242,5 +245,23 @@ mod tests {
             split_commands(input),
             vec!["interface IERC20 {\n}\n", "contract LiquidityPool {\n}\n"]
         );
+    }
+
+    #[test]
+    fn it_can_split_contract() {
+        let input = "##START##
+      contract BitShifter {
+        function shiftLeft(uint256 input) public pure returns (uint256) {
+        uint256 result;
+        assembly {
+        result := shl(2, input)
+        result := shl(2, result)
+        }
+        return result;
+        }
+      }
+      ##END##";
+
+        assert_eq!(split_commands(input).len(), 1);
     }
 }

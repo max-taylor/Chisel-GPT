@@ -40,4 +40,7 @@ Feel free to submit PR's or issues
 
 - [ ] Include previous messages and responses in the openai request
 - [ ] Modify !help, to include the custom command; !chat
-- [ ] Improve the prompt
+- [ ] If '##START##' is found but '##END##' isn't, query for the remaining code
+- [ ] Remove .unwrap() calls, update error handling to be more coherent
+- [x] Update parsing logic to not require a command delineator (to reduce the chance of ChatGPT sending bad responses)
+- [x] Improve the prompt

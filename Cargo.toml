@@ -1,5 +1,5 @@
 [package]
-name = "ChiselGPT"
+name = "chisel_gpt"
 version = "0.1.0"
 edition = "2021"
 

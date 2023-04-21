@@ -26,7 +26,10 @@ pub fn split_commands(input: &str) -> Vec<String> {
                         || line.starts_with("constructor")
                         || line.starts_with("if")
                         || line.starts_with("else")
-                        || line.starts_with("assembly"))
+                        || line.starts_with("assembly")
+                        || line.starts_with("modifier")
+                        || line.starts_with("receive")
+                        || line.starts_with("fallback"))
                 {
                     nested_total += 1;
                 } else if line.starts_with("interface") {

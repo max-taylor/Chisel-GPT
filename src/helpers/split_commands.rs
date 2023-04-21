@@ -19,7 +19,11 @@ pub fn split_commands(input: &str) -> Vec<String> {
             let mut within_interface = false;
 
             for line in lines {
-                // May need to check for this later on, can throw an error if not equal to current: if line.starts_with("pragma") {}
+                // Skip adding new pragma statements
+                if line.starts_with("pragma") {
+                    continue;
+                }
+
                 if !within_interface
                     && (line.starts_with("contract")
                         || line.starts_with("function")

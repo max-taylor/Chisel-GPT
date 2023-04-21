@@ -3,9 +3,11 @@ const END_TAG: &str = "##END##";
 
 pub fn split_commands(input: &str) -> Vec<String> {
     let mut commands = Vec::new();
+    let mut current_command = String::new();
+    let mut open_brackets = 0;
+    let mut in_multiline_construct = false;
 
     if let (Some(start), Some(end)) = (input.find(START_TAG), input.find(END_TAG)) {
-        // Only look for commands if start is greater than the end
         if start < end {
             let stripped_response = &input[start + START_TAG.len()..end];
             let lines: Vec<&str> = stripped_response
@@ -14,51 +16,26 @@ pub fn split_commands(input: &str) -> Vec<String> {
                 .filter(|s| !s.is_empty())
                 .collect();
 
-            let mut nested_total = 0;
-            let mut current_command = String::new();
-            let mut within_interface = false;
-
             for line in lines {
-                // Skip adding new pragma statements
                 if line.starts_with("pragma") {
                     continue;
                 }
 
-                if !within_interface
-                    && (line.starts_with("contract")
-                        || line.starts_with("function")
-                        || line.starts_with("constructor")
-                        || line.starts_with("if")
-                        || line.starts_with("else")
-                        || line.starts_with("assembly")
-                        || line.starts_with("modifier")
-                        || line.starts_with("receive")
-                        || line.starts_with("fallback"))
-                {
-                    nested_total += 1;
-                } else if line.starts_with("interface") {
-                    within_interface = true;
-                    nested_total += 1;
+                open_brackets += line.chars().filter(|&c| c == '{').count();
+                open_brackets -= line.chars().filter(|&c| c == '}').count();
+
+                if line.contains("= new") && line.ends_with("(") {
+                    in_multiline_construct = true;
+                } else if in_multiline_construct && line.ends_with(");") {
+                    in_multiline_construct = false;
                 }
 
-                if nested_total > 0 {
-                    current_command.push_str(line);
-                    current_command.push_str("\n");
+                current_command.push_str(line);
+                current_command.push('\n');
 
-                    if line.ends_with("}") {
-                        nested_total -= 1;
-
-                        if nested_total == 0 {
-                            commands.push(current_command.clone());
-                            current_command.clear();
-                            within_interface = false; // Reset this
-                        }
-                    }
-                } else {
-                    // Ignore single line comments
-                    if !line.starts_with("//") {
-                        commands.push(line.to_string());
-                    }
+                if open_brackets == 0 && !in_multiline_construct {
+                    commands.push(current_command.trim().to_string());
+                    current_command.clear();
                 }
             }
         }
@@ -83,7 +60,7 @@ mod tests {
 
         assert_eq!(
             split_commands(input),
-            vec!["contract Token {\nstring public constant symbol = 'TKN';\n}\n"],
+            vec!["contract Token {\nstring public constant symbol = 'TKN';\n}"],
         );
     }
 
@@ -97,7 +74,7 @@ mod tests {
 
         assert_eq!(
             split_commands(input),
-            vec!["function test() external {\naddress owner = msg.sender;\n}\n"],
+            vec!["function test() external {\naddress owner = msg.sender;\n}"],
         );
     }
 
@@ -134,8 +111,8 @@ mod tests {
         assert_eq!(
             split_commands(input),
             vec![
-                "contract Token {\nstring public constant symbol = 'TKN';\nstring public constant name = 'TKN';\n}\n",
-                "function test() external {\naddress owner = msg.sender;\n}\n"
+                "contract Token {\nstring public constant symbol = 'TKN';\nstring public constant name = 'TKN';\n}",
+                "function test() external {\naddress owner = msg.sender;\n}"
             ],
         );
     }
@@ -154,7 +131,7 @@ mod tests {
         assert_eq!(
             split_commands(input),
             vec![
-                "!clear", "contract Token {\nstring public constant symbol = 'TKN';\nstring public constant name = 'TKN';\n}\n",
+                "!clear", "contract Token {\nstring public constant symbol = 'TKN';\nstring public constant name = 'TKN';\n}",
                 "!clear"
             ],
         );
@@ -175,7 +152,7 @@ mod tests {
         assert_eq!(
         split_commands(input),
         vec![
-            "contract LiquidityPool {\naddress public token1;\nfunction addLiquidity(uint256 _amount1, uint256 _amount2) public {\nuint256 total = _amount + _amount2;\n}\n}\n"
+            "contract LiquidityPool {\naddress public token1;\nfunction addLiquidity(uint256 _amount1, uint256 _amount2) public {\nuint256 total = _amount + _amount2;\n}\n}"
         ],
     );
     }
@@ -199,7 +176,7 @@ mod tests {
         assert_eq!(
         split_commands(input),
         vec![
-            "contract LiquidityPool {\naddress public token1;\nfunction addLiquidity(uint256 _amount1, uint256 _amount2) public {\nuint256 total = _amount + _amount2;\n}\n}\n", "interface IERC20 {\nfunction transferFrom(address sender, address recipient, uint256 amount) external returns (bool);\n}\n"
+            "contract LiquidityPool {\naddress public token1;\nfunction addLiquidity(uint256 _amount1, uint256 _amount2) public {\nuint256 total = _amount + _amount2;\n}\n}", "interface IERC20 {\nfunction transferFrom(address sender, address recipient, uint256 amount) external returns (bool);\n}"
         ],
     );
     }
@@ -220,7 +197,7 @@ mod tests {
       }
       ##END##";
 
-        assert_eq!(split_commands(input), vec!["contract LiquidityPool {\naddress public token1;\nconstructor(address _token1) {\ntoken1 = _token1;\n}\nfunction getReserves() public view returns (uint256) {\nreturn (reserve1);\n}\n}\n"]);
+        assert_eq!(split_commands(input), vec!["contract LiquidityPool {\naddress public token1;\nconstructor(address _token1) {\ntoken1 = _token1;\n}\nfunction getReserves() public view returns (uint256) {\nreturn (reserve1);\n}\n}"]);
     }
 
     #[test]
@@ -235,7 +212,7 @@ mod tests {
       }
       ##END##";
 
-        assert_eq!(split_commands(input), vec!["contract LiquidityPool {\nfunction addLiquidity(uint256 _amount1, uint256 _amount2) public {\nif (reserve1 == 0 && reserve2 == 0) {\n} else {\n}\n}\n}\n"]);
+        assert_eq!(split_commands(input), vec!["contract LiquidityPool {\nfunction addLiquidity(uint256 _amount1, uint256 _amount2) public {\nif (reserve1 == 0 && reserve2 == 0) {\n} else {\n}\n}\n}"]);
     }
 
     #[test]
@@ -250,12 +227,12 @@ mod tests {
 
         assert_eq!(
             split_commands(input),
-            vec!["interface IERC20 {\n}\n", "contract LiquidityPool {\n}\n"]
+            vec!["interface IERC20 {\n}", "contract LiquidityPool {\n}"]
         );
     }
 
     #[test]
-    fn it_can_split_contract() {
+    fn it_can_split_contract_with_assembly() {
         let input = "##START##
       contract BitShifter {
         function shiftLeft(uint256 input) public pure returns (uint256) {
@@ -267,6 +244,20 @@ mod tests {
         return result;
         }
       }
+      ##END##";
+
+        assert_eq!(split_commands(input).len(), 1);
+    }
+
+    #[test]
+    fn it_can_split_multiline_construct() {
+        let input = "##START##
+      VRFExample vrf = new VRFExample(
+        0x0,
+        0x0,
+        0x0,
+        0x0
+      );
       ##END##";
 
         assert_eq!(split_commands(input).len(), 1);

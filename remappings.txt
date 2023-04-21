@@ -1,3 +1,4 @@
 @openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/
 @gnosis.pm/safe-contracts/=lib/safe-contracts/
 @uniswap/v2-periphery/=lib/v2-periphery/
+@chainlink/=lib/chainlink/

@@ -10,3 +10,6 @@
 	path = lib/safe-contracts
 	url = https://github.com/safe-global/safe-contracts
 	branch = 069992ceb353d993aa3b7d66f7a09aac780ec9fe
+[submodule "lib/v2-periphery"]
+	path = lib/v2-periphery
+	url = https://github.com/Uniswap/v2-periphery

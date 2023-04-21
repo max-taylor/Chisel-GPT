@@ -13,10 +13,7 @@ use rustyline::{
     validate::{ValidationContext, ValidationResult, Validator},
     Helper,
 };
-use solang_parser::{
-    lexer::{Lexer, LexicalError, Token},
-    pt,
-};
+use solang_parser::lexer::{Lexer, LexicalError, Token};
 use yansi::{Color, Paint, Style};
 
 /// The default pre-allocation for solang parsed comments

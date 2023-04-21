@@ -1,4 +1,8 @@
-use chisel::prelude::{ChiselCommand, ChiselDispatcher, DispatchResult};
+use chisel::{
+    prelude::{format_source, ChiselCommand, ChiselDispatcher, DispatchResult},
+    solidity_helper::SolidityHelper,
+};
+use foundry_config::FormatterConfig;
 use std::error::Error;
 use yansi::Paint;
 
@@ -10,7 +14,7 @@ use async_openai::{
     Client,
 };
 
-use crate::helpers::{dispatch::dispatch_command, split_commands::split_commands};
+use crate::helpers::{dispatch::log_dispatch_result, split_commands::split_commands};
 
 use super::context::create_context_string;
 
@@ -41,12 +45,13 @@ fn build_request(
 pub struct CompletionClient {
     client: Client,
     help_text: String,
+    formatter_config: FormatterConfig,
 }
 
 type OpenAIResult<T> = Result<T, Box<dyn Error>>;
 
 impl CompletionClient {
-    pub async fn new(dispatcher: &mut ChiselDispatcher) -> Self {
+    pub async fn new(dispatcher: &mut ChiselDispatcher, formatter_config: FormatterConfig) -> Self {
         let client = Client::new();
 
         let help_result = dispatcher.dispatch_command(ChiselCommand::Help, &[]).await;
@@ -59,6 +64,7 @@ impl CompletionClient {
         Self {
             client,
             help_text: help_text.unwrap(),
+            formatter_config,
         }
     }
 
@@ -67,30 +73,42 @@ impl CompletionClient {
         dispatcher: &mut ChiselDispatcher,
         line: String,
     ) -> OpenAIResult<()> {
-        let is_tracing = match &dispatcher.session.session_source {
-            Some(result) => result.config.traces,
-            None => false,
-        };
+        println!(
+            "{}",
+            Paint::blue("\nFetching required command recipe from ChiselGPT\n")
+        );
 
-        if is_tracing {
-            println!("{}", Paint::blue("Getting command recipe from ChiselGPT"));
+        let (commands, raw_response) = self.get_chat_response(dispatcher, line).await.unwrap();
+
+        if commands.len() == 0 {
+            eprintln!(
+                "No Commands found for response: {}",
+                Paint::red(raw_response)
+            );
+
+            return Ok(());
         }
 
-        let chat_response = self.get_chat_response(dispatcher, line).await?;
+        println!(
+            "{}",
+            Paint::green(format!(
+                "Cooking command recipe ({} ingredients)",
+                commands.len()
+            ))
+        );
 
-        if is_tracing {
-            println!("{}", Paint::green("Got Recipe: "));
-            for (index, part) in chat_response.clone().iter().enumerate() {
-                println!("{}: {}", index, part);
-            }
+        for (index, raw_command) in commands.into_iter().enumerate() {
+            let formatted_command = match format_source(&raw_command, self.formatter_config.clone())
+            {
+                Ok(formatted_source) => SolidityHelper::highlight(&formatted_source).into_owned(),
+                Err(_) => SolidityHelper::highlight(&raw_command).into_owned(),
+            };
 
-            println!("{}", Paint::green("Running..."));
-        }
+            println!("\n{}", Paint::magenta(format!("Ingredient {}:", index + 1)));
+            println!("{}", Paint::green(&formatted_command));
 
-        for command in chat_response {
-            println!("{}", command);
-
-            dispatch_command(dispatcher, &command).await;
+            let dispatch_result = dispatcher.dispatch(&raw_command).await;
+            log_dispatch_result(&dispatch_result);
         }
 
         Ok(())
@@ -100,7 +118,7 @@ impl CompletionClient {
         &self,
         dispatcher: &mut ChiselDispatcher,
         request: String,
-    ) -> OpenAIResult<Vec<String>> {
+    ) -> OpenAIResult<(Vec<String>, String)> {
         let chisel_context = dispatcher
             .dispatch_command(ChiselCommand::Source, &[])
             .await;
@@ -124,8 +142,10 @@ impl CompletionClient {
             )?)
             .await?;
 
-        let choice = &response.choices.get(0).unwrap().message.content;
+        let raw_response = response.choices.get(0).unwrap().message.content.clone();
 
-        Ok(split_commands(choice))
+        let commands = split_commands(&raw_response);
+
+        Ok((commands, raw_response))
     }
 }

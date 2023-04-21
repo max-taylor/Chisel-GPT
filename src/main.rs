@@ -5,7 +5,7 @@ mod helpers;
 
 use chisel::{
     history::chisel_history_file,
-    prelude::{ChiselCommand, ChiselDispatcher, DispatchResult, SolidityHelper},
+    prelude::{ChiselCommand, ChiselDispatcher, DispatchResult},
 };
 use clap::Parser;
 use foundry_cli::cmd::{forge::build::BuildArgs, LoadConfig};
@@ -22,7 +22,7 @@ use yansi::Paint;
 
 use crate::{
     completion::complete::CompletionClient,
-    helpers::{command_helper::CommandHelper, dispatch::dispatch_command},
+    helpers::{command_helper::CommandHelper, dispatch::log_dispatch_result},
 };
 
 // Loads project's figment and merges the build cli arguments into it
@@ -78,12 +78,12 @@ async fn main() -> eyre::Result<()> {
     let mut dispatcher = ChiselDispatcher::new(chisel::session_source::SessionSourceConfig {
         // Enable traces if any level of verbosity was passed
         traces: config.verbosity > 0,
-        foundry_config: config,
+        foundry_config: config.clone(),
         evm_opts,
         backend: None,
     })?;
 
-    let mut completion = CompletionClient::new(&mut dispatcher).await;
+    let completion = CompletionClient::new(&mut dispatcher, config.fmt).await;
 
     // Check for chisel subcommands
     match &args.sub {
@@ -182,7 +182,8 @@ async fn main() -> eyre::Result<()> {
                         .await
                         .unwrap();
                 } else {
-                    dispatch_command(&mut dispatcher, &line).await;
+                    let dispatch_result = dispatcher.dispatch(&line).await;
+                    log_dispatch_result(&dispatch_result);
                 }
             }
             Err(ReadlineError::Interrupted) => {

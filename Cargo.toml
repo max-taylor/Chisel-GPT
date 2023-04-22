@@ -6,10 +6,10 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-chisel = { git = "https://github.com/foundry-rs/foundry.git" }
-foundry-common = { git = "https://github.com/foundry-rs/foundry.git" }
-foundry-cli = { git = "https://github.com/foundry-rs/foundry.git" }
-foundry-config = { git = "https://github.com/foundry-rs/foundry.git" }
+chisel = { git = "https://github.com/foundry-rs/foundry.git", rev = "8307d6dc09dbd99d64239b901413869dc33cfa3e" }
+foundry-common = { git = "https://github.com/foundry-rs/foundry.git", rev = "8307d6dc09dbd99d64239b901413869dc33cfa3e" }
+foundry-cli = { git = "https://github.com/foundry-rs/foundry.git",rev = "8307d6dc09dbd99d64239b901413869dc33cfa3e" }
+foundry-config = { git = "https://github.com/foundry-rs/foundry.git",rev = "8307d6dc09dbd99d64239b901413869dc33cfa3e" }
 clap = "4.2.1"
 clap_complete = "4.2.0"
 clap_complete_fig = "4.2.0"
@@ -20,4 +20,4 @@ yansi = "0.5.1"
 eyre = "0.6.8"
 async-openai = "0.10.2"
 regex = "1.7.3"
-solang-parser = "=0.2.3"
+solang-parser = "=0.2.4"

@@ -1,6 +1,6 @@
 # ChiselGPT: AI-Boosted Solidity REPL
 
-![Demo Video](https://github.com/max-taylor/Chisel-GPT/blob/main/assets/demo.gif)
+![Demo Video](https://github.com/max-taylor/Chisel-GPT/blob/master/assets/demo.gif)
 
 Chisel-GPT is an extension for [Chisel](https://github.com/foundry-rs/foundry/tree/master/chisel) allowing natural language requests. The natural language requests are converted into Chisel/Solidity commands and they are executed within the Chisel environment.
 

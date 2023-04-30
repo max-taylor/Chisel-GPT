@@ -7,9 +7,10 @@ use std::error::Error;
 use yansi::Paint;
 
 use async_openai::{
+    error::OpenAIError,
     types::{
-        ChatCompletionRequestMessageArgs, CreateChatCompletionRequest,
-        CreateChatCompletionRequestArgs, Role,
+        ChatCompletionRequestMessage, ChatCompletionRequestMessageArgs,
+        CreateChatCompletionRequest, CreateChatCompletionRequestArgs, Role,
     },
     Client,
 };
@@ -17,30 +18,6 @@ use async_openai::{
 use crate::helpers::{dispatch::log_dispatch_result, split_commands::split_commands};
 
 use super::context::create_context_string;
-
-fn build_request(
-    request: String,
-    help_text: String,
-    chisel_context: String,
-) -> Result<CreateChatCompletionRequest, Box<dyn Error>> {
-    let request = CreateChatCompletionRequestArgs::default()
-        .max_tokens(512u16)
-        .model("gpt-3.5-turbo")
-        .temperature(0.0) // To get close-to deterministic results
-        .messages([
-            ChatCompletionRequestMessageArgs::default()
-                .role(Role::System)
-                .content(create_context_string(help_text, chisel_context))
-                .build()?,
-            ChatCompletionRequestMessageArgs::default()
-                .role(Role::User)
-                .content(request)
-                .build()?,
-        ])
-        .build()?;
-
-    Ok(request)
-}
 
 pub struct CompletionClient {
     client: Client,
@@ -78,7 +55,7 @@ impl CompletionClient {
             Paint::blue("\nFetching required command recipe from ChiselGPT\n")
         );
 
-        let (commands, raw_response) = self.get_chat_response(dispatcher, line).await.unwrap();
+        let (commands, raw_response) = self.get_chat_response(dispatcher, line).await?;
 
         if commands.len() == 0 {
             eprintln!(
@@ -123,23 +100,18 @@ impl CompletionClient {
             .dispatch_command(ChiselCommand::Source, &[])
             .await;
 
-        let mut chisel_state: Option<String> = None;
-        if let DispatchResult::CommandSuccess(chisel_context) = chisel_context {
-            if let Some(chisel_context) = chisel_context {
-                chisel_state = Some(Paint::green(chisel_context).to_string());
+        let chisel_state = match chisel_context {
+            DispatchResult::CommandSuccess(chisel_context) => chisel_context,
+            _ => {
+                return Err("Failed to get Chisel Context".into());
             }
         }
-
-        let chisel_state = chisel_state.unwrap();
+        .unwrap();
 
         let response = self
             .client
             .chat()
-            .create(build_request(
-                request,
-                self.help_text.clone(),
-                chisel_state,
-            )?)
+            .create(self.get_request(request, chisel_state)?)
             .await?;
 
         let raw_response = response.choices.get(0).unwrap().message.content.clone();
@@ -147,5 +119,30 @@ impl CompletionClient {
         let commands = split_commands(&raw_response);
 
         Ok((commands, raw_response))
+    }
+
+    fn get_request(
+        &self,
+        request: String,
+        chisel_context: String,
+    ) -> Result<CreateChatCompletionRequest, OpenAIError> {
+        CreateChatCompletionRequestArgs::default()
+            .max_tokens(512u16)
+            .model("gpt-3.5-turbo")
+            .temperature(0.0) // To get close-to deterministic results
+            .messages([
+                ChatCompletionRequestMessageArgs::default()
+                    .role(Role::System)
+                    .content(create_context_string(
+                        self.help_text.clone(),
+                        chisel_context,
+                    ))
+                    .build()?,
+                ChatCompletionRequestMessageArgs::default()
+                    .role(Role::User)
+                    .content(request)
+                    .build()?,
+            ])
+            .build()
     }
 }

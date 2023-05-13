@@ -1,6 +1,57 @@
 const START_TAG: &str = "##START##";
 const END_TAG: &str = "##END##";
 
+type Complete<T> = T;
+
+pub enum Response {
+    Complete(String),
+    Incomplete(String),
+}
+
+pub fn format_current_line(current_line: &str, next_value: &str) -> Response {
+    let updated_line = format!("{}{}", current_line, next_value);
+
+    if next_value.contains("\n") {
+        Response::Complete(updated_line)
+    } else {
+        Response::Incomplete(updated_line)
+    }
+}
+
+pub fn process_lines(current_lines: &mut Vec<String>) -> Response {
+    let current_command = current_lines.join("\n").trim().to_string();
+
+    let mut open_brackets = 0;
+    let mut in_multiline_construct = false;
+
+    for line in current_lines {
+        if line.starts_with("pragma") {
+            continue;
+        }
+
+        open_brackets += line.chars().filter(|&c| c == '{').count();
+        open_brackets -= line.chars().filter(|&c| c == '}').count();
+
+        if line.contains("= new") && line.ends_with("(") {
+            in_multiline_construct = true;
+        } else if in_multiline_construct && line.ends_with(");") {
+            in_multiline_construct = false;
+        }
+
+        if open_brackets == 0 && !in_multiline_construct {
+            return Response::Complete(current_command);
+        }
+    }
+
+    Response::Incomplete(current_command)
+}
+
+pub fn handle_stream(current_command_state: &str, new_line: &str) -> Vec<String> {
+    let mut commands = Vec::new();
+
+    commands
+}
+
 pub fn split_commands(input: &str) -> Vec<String> {
     let mut commands = Vec::new();
     let mut current_command = String::new();

@@ -632,6 +632,7 @@ dependencies = [
  "foundry-cli",
  "foundry-common",
  "foundry-config",
+ "futures",
  "regex",
  "rustyline",
  "solang-parser",

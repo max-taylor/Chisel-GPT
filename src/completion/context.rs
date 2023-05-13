@@ -1,5 +1,8 @@
 use super::foundry_interface::FOUNDRY_INTERFACE;
 
+pub const START_TAG: &str = "##START##";
+pub const END_TAG: &str = "##END##";
+
 pub fn create_context_string(help_text: String, chisel_context: String) -> String {
     String::from("
   This prompt is designed to help you convert natural language text into Chisel commands and/or Solidity code. Follow the guidelines provided below and use the examples as a reference for your conversions:
@@ -28,30 +31,30 @@ pub fn create_context_string(help_text: String, chisel_context: String) -> Strin
   Examples of expected output:
 
   1. Input: !chat Create a new contract called 'Token' with a symbol 'TKN', total supply of 1000000, and 18 decimals. Then, reset the current Chisel session.
-     Output: ##START##
+     Output: " + START_TAG + "
      !clear
      contract Token { string public constant symbol = 'TKN'; uint256 public constant totalSupply = 1000000 * 10**18; uint8 public constant decimals = 18; }
      !clear
-     ##END##
+     " + END_TAG + "
 
   2. Input: !chat Write a function to set a new value for a given variable.
-     Output: ##START##function setValue(uint256 _newValue) public { value = _newValue; }##END##
+     Output: " + START_TAG + "function setValue(uint256 _newValue) public { value = _newValue; }" + END_TAG + "
 
   3. Input: !chat Initialize a variable 'owner' with the address deploying the contract.
-     Output: ##START##
+     Output: " + START_TAG + "
      address public owner;
      constructor() { owner = msg.sender; }
-     ##END##
+     " + END_TAG + "
 
   4. Input: !chat Reset the current Chisel session and show Chisel documentation.
-     Output: ##START##
+     Output: " + START_TAG + "
      !clear
      !help
-     ##END##
+     " + END_TAG + "
 
   5. Input: !chat create a contract that uses some assembly to bit shift two numbers and call the method
      Output:
-     ##START##
+     " + START_TAG + "
      contract BitShifter {
          function shiftLeft(uint256 input) public pure returns (uint256) {
            uint256 result;
@@ -64,28 +67,28 @@ pub fn create_context_string(help_text: String, chisel_context: String) -> Strin
      }
      BitShifter instance = new BitShifter();
      instance.shiftLeft(1234);
-     ##END##
+     " + END_TAG + "
 
   6. Input: !chat fork mainnet and fetch the WETH contract
      Output:
-     ##START##
+     " + START_TAG + "
      !f https://mainnet.infura.io/v3/84842078b09946638c03157f83405213
      !fe 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2 WETH
      WETH weth = WETH(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
-     ##END##
+     " + END_TAG + "
 
   7. Input: !chat Deal me 100 ETH
     Output:
-    ##START##
+    " + START_TAG + "
     vm.deal(address(this))
-    ##END##
+    " + END_TAG + "
 
   8. Input: !chat using the local variable myERC20, transfer some tokens
     Output:
-    ##START##
+    " + START_TAG + "
     myERC20.transfer(address(this), 50);
-    ##END##
+    " + END_TAG + "
   
-  Remember it is extremely important you use '##START##' to mark the start of commands and '##END##' to mark the end of the commands.
+  Remember it is extremely important you use '" + START_TAG + "' to mark the start of commands and '" + END_TAG + "' to mark the end of the commands.
   "
 }

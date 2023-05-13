@@ -3,21 +3,24 @@ use chisel::{
     solidity_helper::SolidityHelper,
 };
 use foundry_config::FormatterConfig;
-use std::error::Error;
-use yansi::Paint;
 
 use async_openai::{
     error::OpenAIError,
     types::{
         ChatCompletionRequestMessage, ChatCompletionRequestMessageArgs,
-        CreateChatCompletionRequest, CreateChatCompletionRequestArgs, Role,
+        CreateChatCompletionRequest, CreateChatCompletionRequestArgs,
+        CreateChatCompletionStreamResponse, Role,
     },
     Client,
 };
+use std::{error::Error, io::stdout};
+use std::{iter::Iterator, vec};
+use yansi::Paint;
 
 use crate::helpers::{dispatch::log_dispatch_result, split_commands::split_commands};
+use futures::StreamExt;
 
-use super::context::create_context_string;
+use super::{command_response::CommandResponse, context::create_context_string};
 
 pub struct CompletionClient {
     client: Client,
@@ -91,6 +94,18 @@ impl CompletionClient {
         Ok(())
     }
 
+    fn parse_chat_completion_response(response: CreateChatCompletionStreamResponse) -> String {
+        let mut response_string = String::new();
+
+        for choice in response.choices {
+            if let Some(content) = choice.delta.content {
+                response_string.push_str(&content);
+            }
+        }
+
+        response_string
+    }
+
     async fn get_chat_response(
         &self,
         dispatcher: &mut ChiselDispatcher,
@@ -108,17 +123,64 @@ impl CompletionClient {
         }
         .unwrap();
 
-        let response = self
+        let mut stream = self
             .client
             .chat()
-            .create(self.get_request(request, chisel_state)?)
+            .create_stream(self.get_request(request, chisel_state)?)
             .await?;
 
-        let raw_response = response.choices.get(0).unwrap().message.content.clone();
+        let mut command_response = CommandResponse::new();
 
-        let commands = split_commands(&raw_response);
+        while let Some(response) = stream.next().await {
+            match response {
+                Ok(ccr) => {
+                    // Create string of all choices
+                    let next_line = Self::parse_chat_completion_response(ccr);
 
-        Ok((commands, raw_response))
+                    command_response.handle_stream(&next_line);
+
+                    let highlighted_command = SolidityHelper::highlight(&next_line).into_owned();
+
+                    command_response
+                        .try_send_current_command(dispatcher)
+                        .await?;
+
+                    print!("{}", highlighted_command);
+                }
+                Err(e) => eprintln!("{}", e),
+            }
+        }
+        // let response = self
+        //     .client
+        //     .chat()
+        //     .create(self.get_request(request, chisel_state)?)
+        //     .await?;
+
+        // let raw_response = response.choices.get(0).unwrap().message.content.clone();
+        // while let Some(result) = stream.next().await {}
+
+        // let mut lock = stdout().lock();
+        // while let Some(result) = stream.next().await {
+        //     match result {
+        //         Ok(response) => {
+        //             response.choices.iter().for_each(|chat_choice| {
+        //                 if let Some(ref content) = chat_choice.delta.content {
+        //                     write!(lock, "{}", content).unwrap();
+        //                 }
+        //             });
+        //         }
+        //         Err(err) => {
+        //             writeln!(lock, "error: {err}").unwrap();
+        //         }
+        //     }
+        //     stdout().flush()?;
+        // }
+
+        Ok((vec![], "".to_string()))
+
+        // let commands = split_commands(&raw_response);
+
+        // Ok((commands, raw_response))
     }
 
     fn get_request(

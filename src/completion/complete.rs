@@ -131,21 +131,26 @@ impl CompletionClient {
 
         let mut command_response = CommandResponse::new();
 
+        // End stream
+        // stream.send(None).await?;
+
         while let Some(response) = stream.next().await {
             match response {
                 Ok(ccr) => {
                     // Create string of all choices
                     let next_line = Self::parse_chat_completion_response(ccr);
 
-                    command_response.handle_stream(&next_line);
+                    let should_send = command_response.handle_stream(&next_line);
 
                     let highlighted_command = SolidityHelper::highlight(&next_line).into_owned();
 
-                    command_response
-                        .try_send_current_command(dispatcher)
-                        .await?;
-
                     print!("{}", highlighted_command);
+
+                    if should_send {
+                        command_response
+                            .try_send_current_command(dispatcher)
+                            .await?;
+                    }
                 }
                 Err(e) => eprintln!("{}", e),
             }

@@ -11,11 +11,31 @@
       "cargo": {
         "args": [
           "build",
-          "--bin=ChiselGPT",
-          "--package=ChiselGPT"
+          "--bin=chisel_gpt",
+          "--package=chisel_gpt"
         ],
         "filter": {
           "name": "ChiselGPT",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug unit tests in executable 'ChiselGPT'",
+      "cargo": {
+        "args": [
+          "test",
+          "--no-run",
+          "--bin=chisel_gpt",
+          "--package=chisel_gpt",
+          "outside_dimension"
+        ],
+        "filter": {
+          "name": "chisel_gpt",
           "kind": "bin"
         }
       },

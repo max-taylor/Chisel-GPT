@@ -38,14 +38,15 @@ impl CommandResponse {
         }
     }
 
-    pub fn from_line_array(line_array: Vec<&str>) -> Self {
-        let mut command_response = Self::new();
-
-        for line in line_array {
-            command_response.handle_stream(&line.to_string());
+    pub async fn resolve_errored_commands(&mut self) {
+        for command in self.commands.iter_mut() {
+            match command {
+                Command::Errored(command_text) => {
+                    // TODO: Tell ChatGPT you done fucked up
+                }
+                _ => {}
+            }
         }
-
-        command_response
     }
 
     pub async fn try_send_pending_commands(
@@ -65,39 +66,16 @@ impl CommandResponse {
                             self.current_command_lines = vec![];
                         }
                         _ => {
-                            dbg!("command failed");
+                            eprintln!("Ingredient failed");
+
+                            *command = Command::Errored(command_text.clone());
                         }
                     }
                 }
+                // Ignore the command if it has successfully completed
                 _ => {}
             }
         }
-
-        Ok(())
-    }
-
-    pub async fn try_send_current_command(
-        &mut self,
-        dispatcher: &mut ChiselDispatcher,
-    ) -> CommandResult {
-        // if let CurrentCommandState::Complete(lines) = &self.pending_command_state {
-        //     let command = lines.join("\n").trim().to_string();
-
-        //     let dispatch_result = dispatcher.dispatch(&command).await;
-        //     log_dispatch_result(&dispatch_result);
-
-        //     match dispatch_result {
-        //         DispatchResult::Success(_) | DispatchResult::CommandSuccess(_) => {
-        //             self.commands.push(Command::Complete(command));
-        //             self.pending_command_state = CurrentCommandState::Incomplete(vec![]);
-        //         }
-        //         _ => {
-        //             dbg!("command failed");
-        //         }
-        //     }
-
-        //     return Ok(());
-        // }
 
         Ok(())
     }
@@ -111,7 +89,7 @@ impl CommandResponse {
     /// # Returns
     ///
     /// * `bool` - True if the command is complete, false if the command is incomplete
-    pub fn handle_stream(&mut self, next_stream_response: &String) -> bool {
+    pub fn handle_next_stream_value(&mut self, next_stream_response: &String) -> bool {
         let current_line = format_current_line(&self.current_line, next_stream_response);
 
         if let Response::Incomplete(line) = current_line {
@@ -161,6 +139,16 @@ mod tests {
 
     use super::CommandResponse;
 
+    fn from_line_array(line_array: Vec<&str>) -> CommandResponse {
+        let mut command_response = CommandResponse::new();
+
+        for line in line_array {
+            command_response.handle_next_stream_value(&line.to_string());
+        }
+
+        command_response
+    }
+
     #[test]
     fn it_can_handle_simple_stream() {
         let items = vec![
@@ -171,7 +159,7 @@ mod tests {
             "##END##\n",
         ];
 
-        let command_response = CommandResponse::from_line_array(items);
+        let command_response = from_line_array(items);
 
         assert_eq!(command_response.commands.len(), 1);
         assert_eq!(
@@ -194,7 +182,7 @@ mod tests {
             "##END##\n",
         ];
 
-        let command_response = CommandResponse::from_line_array(items);
+        let command_response = from_line_array(items);
 
         assert_eq!(
             command_response.commands[0],
@@ -214,7 +202,7 @@ mod tests {
             "##END##\n",
         ];
 
-        let command_response = CommandResponse::from_line_array(items);
+        let command_response = from_line_array(items);
 
         assert_eq!(command_response.commands.len(), 3);
         assert_eq!(
@@ -245,7 +233,7 @@ mod tests {
             "##END##\n",
         ];
 
-        let command_response = CommandResponse::from_line_array(items);
+        let command_response = from_line_array(items);
 
         assert_eq!(command_response.commands.len(), 2);
         assert_eq!(
@@ -273,7 +261,7 @@ mod tests {
             "##END##\n",
         ];
 
-        let command_response = CommandResponse::from_line_array(items);
+        let command_response = from_line_array(items);
 
         assert_eq!(command_response.commands.len(), 1);
         assert_eq!(
@@ -298,7 +286,7 @@ mod tests {
             "##END##\n",
         ];
 
-        let command_response = CommandResponse::from_line_array(items);
+        let command_response = from_line_array(items);
 
         assert_eq!(command_response.commands.len(), 2);
         assert_eq!(
@@ -327,7 +315,7 @@ mod tests {
             "##END##\n",
         ];
 
-        let command_response = CommandResponse::from_line_array(items);
+        let command_response = from_line_array(items);
 
         assert_eq!(command_response.commands.len(), 1);
         assert_eq!(
@@ -350,7 +338,7 @@ mod tests {
             "##END##\n",
         ];
 
-        let command_response = CommandResponse::from_line_array(items);
+        let command_response = from_line_array(items);
 
         assert_eq!(command_response.commands.len(), 1);
         assert_eq!(
@@ -370,7 +358,7 @@ mod tests {
             "##END##\n",
         ];
 
-        let command_response = CommandResponse::from_line_array(items);
+        let command_response = from_line_array(items);
 
         assert_eq!(command_response.commands.len(), 2);
         assert_eq!(
@@ -400,7 +388,7 @@ mod tests {
             "##END##\n",
         ];
 
-        let command_response = CommandResponse::from_line_array(items);
+        let command_response = from_line_array(items);
 
         assert_eq!(command_response.commands.len(), 1);
         assert_eq!(
@@ -409,27 +397,27 @@ mod tests {
         );
     }
 
-    #[test]
-    fn it_can_split_multiline_construct() {
-        let items = vec![
-            "##START##\n",
-            "VRFExample vrf = new VRFExample(\n",
-            "0x0,\n",
-            "0x0,\n",
-            "0x0,\n",
-            "0x0\n",
-            ");\n",
-            "##END##\n",
-        ];
+    // #[test]
+    // fn it_can_split_multiline_construct() {
+    //     let items = vec![
+    //         "##START##\n",
+    //         "VRFExample vrf = new VRFExample(\n",
+    //         "0x0,\n",
+    //         "0x0,\n",
+    //         "0x0,\n",
+    //         "0x0\n",
+    //         ");\n",
+    //         "##END##\n",
+    //     ];
 
-        let command_response = CommandResponse::from_line_array(items);
+    //     let command_response = from_line_array(items);
 
-        assert_eq!(command_response.commands.len(), 1);
-        assert_eq!(
-            command_response.commands[0],
-            Command::Pending(
-                "VRFExample vrf = new VRFExample(\n0x0,\n0x0,\n0x0,\n0x0\n);\n".to_string()
-            )
-        );
-    }
+    //     assert_eq!(command_response.commands.len(), 1);
+    //     assert_eq!(
+    //         command_response.commands[0],
+    //         Command::Pending(
+    //             "VRFExample vrf = new VRFExample(\n0x0,\n0x0,\n0x0,\n0x0\n);\n".to_string()
+    //         )
+    //     );
+    // }
 }

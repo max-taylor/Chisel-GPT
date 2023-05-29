@@ -7,17 +7,16 @@ use foundry_config::FormatterConfig;
 use async_openai::{
     error::OpenAIError,
     types::{
-        ChatCompletionRequestMessage, ChatCompletionRequestMessageArgs,
-        CreateChatCompletionRequest, CreateChatCompletionRequestArgs,
-        CreateChatCompletionStreamResponse, Role,
+        ChatCompletionRequestMessageArgs, CreateChatCompletionRequest,
+        CreateChatCompletionRequestArgs, CreateChatCompletionStreamResponse, Role,
     },
     Client,
 };
-use std::{error::Error, io::stdout};
+use std::error::Error;
 use std::{iter::Iterator, vec};
 use yansi::Paint;
 
-use crate::helpers::{dispatch::log_dispatch_result, split_commands::split_commands};
+use crate::helpers::dispatch::log_dispatch_result;
 use futures::StreamExt;
 
 use super::{command_response::CommandResponse, context::create_context_string};
@@ -58,38 +57,37 @@ impl CompletionClient {
             Paint::blue("\nFetching required command recipe from ChiselGPT\n")
         );
 
-        let (commands, raw_response) = self.get_chat_response(dispatcher, line).await?;
+        let total_commands = self.get_chat_response(dispatcher, line).await?;
 
-        if commands.len() == 0 {
-            eprintln!(
-                "No Commands found for response: {}",
-                Paint::red(raw_response)
+        if total_commands == 0 {
+            // eprintln!(
+            //     "No Commands found for response: {}",
+            //     Paint::red(raw_response)
+            // );
+            eprintln!("No Commands found for response");
+        } else {
+            println!(
+                "{}",
+                Paint::green(format!(
+                    "Finished command recipe of ({} ingredients)",
+                    total_commands
+                ))
             );
-
-            return Ok(());
         }
 
-        println!(
-            "{}",
-            Paint::green(format!(
-                "Cooking command recipe ({} ingredients)",
-                commands.len()
-            ))
-        );
+        // for (index, raw_command) in commands.into_iter().enumerate() {
+        //     let formatted_command = match format_source(&raw_command, self.formatter_config.clone())
+        //     {
+        //         Ok(formatted_source) => SolidityHelper::highlight(&formatted_source).into_owned(),
+        //         Err(_) => SolidityHelper::highlight(&raw_command).into_owned(),
+        //     };
 
-        for (index, raw_command) in commands.into_iter().enumerate() {
-            let formatted_command = match format_source(&raw_command, self.formatter_config.clone())
-            {
-                Ok(formatted_source) => SolidityHelper::highlight(&formatted_source).into_owned(),
-                Err(_) => SolidityHelper::highlight(&raw_command).into_owned(),
-            };
+        //     println!("\n{}", Paint::magenta(format!("Ingredient {}:", index + 1)));
+        //     println!("{}", Paint::green(&formatted_command));
 
-            println!("\n{}", Paint::magenta(format!("Ingredient {}:", index + 1)));
-            println!("{}", Paint::green(&formatted_command));
-
-            let dispatch_result = dispatcher.dispatch(&raw_command).await;
-            log_dispatch_result(&dispatch_result);
-        }
+        //     let dispatch_result = dispatcher.dispatch(&raw_command).await;
+        //     log_dispatch_result(&dispatch_result);
+        // }
 
         Ok(())
     }
@@ -110,7 +108,7 @@ impl CompletionClient {
         &self,
         dispatcher: &mut ChiselDispatcher,
         request: String,
-    ) -> OpenAIResult<(Vec<String>, String)> {
+    ) -> OpenAIResult<usize> {
         let chisel_context = dispatcher
             .dispatch_command(ChiselCommand::Source, &[])
             .await;
@@ -131,8 +129,9 @@ impl CompletionClient {
 
         let mut command_response = CommandResponse::new();
 
-        // End stream
-        // stream.send(None).await?;
+        println!("{}", Paint::green(format!("Cooking command recipe")));
+
+        // TODO: Escape kills stream
 
         while let Some(response) = stream.next().await {
             match response {
@@ -140,48 +139,34 @@ impl CompletionClient {
                     // Create string of all choices
                     let next_line = Self::parse_chat_completion_response(ccr);
 
-                    let should_send = command_response.handle_stream(&next_line);
+                    if command_response.within_command_response {
+                        let highlighted_command =
+                            SolidityHelper::highlight(&next_line).into_owned();
 
-                    let highlighted_command = SolidityHelper::highlight(&next_line).into_owned();
+                        print!("{}", highlighted_command);
+                    }
 
-                    print!("{}", highlighted_command);
+                    if command_response.handle_next_stream_value(&next_line) {
+                        println!(
+                            "\n{}",
+                            Paint::magenta(format!(
+                                "Trying to create ingredient {}:",
+                                command_response.commands.len()
+                            ))
+                        );
 
-                    if should_send {
                         command_response
-                            .try_send_current_command(dispatcher)
+                            .try_send_pending_commands(dispatcher)
                             .await?;
                     }
                 }
                 Err(e) => eprintln!("{}", e),
             }
         }
-        // let response = self
-        //     .client
-        //     .chat()
-        //     .create(self.get_request(request, chisel_state)?)
-        //     .await?;
 
-        // let raw_response = response.choices.get(0).unwrap().message.content.clone();
-        // while let Some(result) = stream.next().await {}
+        Ok(command_response.commands.len())
 
-        // let mut lock = stdout().lock();
-        // while let Some(result) = stream.next().await {
-        //     match result {
-        //         Ok(response) => {
-        //             response.choices.iter().for_each(|chat_choice| {
-        //                 if let Some(ref content) = chat_choice.delta.content {
-        //                     write!(lock, "{}", content).unwrap();
-        //                 }
-        //             });
-        //         }
-        //         Err(err) => {
-        //             writeln!(lock, "error: {err}").unwrap();
-        //         }
-        //     }
-        //     stdout().flush()?;
-        // }
-
-        Ok((vec![], "".to_string()))
+        // Ok((vec![], "".to_string()))
 
         // let commands = split_commands(&raw_response);
 
